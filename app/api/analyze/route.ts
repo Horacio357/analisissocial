@@ -1,0 +1,332 @@
+import { NextRequest, NextResponse } from "next/server";
+import { MOCK_PERSONALITIES } from "@/lib/types";
+import { nameToId, ARCHETYPE_CONFIG } from "@/lib/utils";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+const NEWSDATA_API_KEY = process.env.NEWSDATA_API_KEY;
+const NEWSDATA_API_URL = process.env.NEWSDATA_API_URL || "https://newsdata.io/api/1/latest";
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+// In-memory cache (se resetea con cada deploy en prod)
+const analysisCache = new Map<string, { data: unknown; expiresAt: number }>();
+
+// ─── NewsData ──────────────────────────────────────────────────────────────────
+async function fetchPersonalityNews(name: string) {
+  if (!NEWSDATA_API_KEY) return [];
+  const params = new URLSearchParams({
+    apikey: NEWSDATA_API_KEY,
+    q: `"${name}"`,
+    language: "es",
+    country: "ar",
+    size: "10",
+  });
+  try {
+    const res = await fetch(`${NEWSDATA_API_URL}?${params}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.results || [];
+  } catch { return []; }
+}
+
+// ─── Heurística de fallback (sin Gemini) ─────────────────────────────────────
+function heuristicSentiment(text: string): number {
+  const pos = ["logro","éxito","victoria","bien","positivo","avance","recuperación","crecimiento",
+    "apoyo","reconocimiento","acuerdo","mejor","progreso","ganó","celebra","excelente","histórico","elogio"];
+  const neg = ["escándalo","corrupción","crisis","fracaso","caída","condena","juicio","protesta",
+    "conflicto","deuda","inflación","pobreza","desempleo","renuncia","acusa","denuncia","fraude",
+    "robo","mal","peor","grave","problema","falla","error","ataque","violencia","crítica","cuestionado"];
+  const lower = text.toLowerCase();
+  let score = 0;
+  pos.forEach(w => { if (lower.includes(w)) score += 0.12; });
+  neg.forEach(w => { if (lower.includes(w)) score -= 0.12; });
+  return Math.max(-1, Math.min(1, score));
+}
+
+function heuristicArchetype(m: { approval:number; polarization:number; mobilization:number; coherence:number; resonance:number; trust:number }) {
+  if (m.approval > 70 && m.polarization < 30) return "hero";
+  if (m.polarization > 75 && m.mobilization > 70) return m.approval < 45 ? "villain" : "trickster";
+  if (m.trust > 70 && m.coherence > 70) return "sage";
+  if (m.polarization > 60 && m.trust < 40) return "trickster";
+  if (m.coherence > 60 && m.trust > 50) return "guardian";
+  return m.resonance > 80 ? (m.polarization > 60 ? "villain" : "hero") : "guardian";
+}
+
+function heuristicMetrics(articles: Array<{ title?: string; description?: string }>) {
+  if (!articles.length) return { approval:50, polarization:50, mobilization:50, coherence:50, resonance:50, trust:50 };
+  const sentiments = articles.map(a => heuristicSentiment(`${a.title||""} ${a.description||""}`));
+  const avg = sentiments.reduce((a,b) => a+b, 0) / sentiments.length;
+  const variance = sentiments.reduce((acc,s) => acc + (s-avg)**2, 0) / sentiments.length;
+  const approval = Math.round(((avg+1)/2)*100);
+  const polarization = Math.round(Math.min(100, variance*500+30));
+  const mobilization = Math.round(Math.min(100, articles.length*10));
+  const coherence = Math.round(100 - polarization*0.6);
+  const resonance = Math.round(Math.min(100, articles.length*8+30));
+  const trust = Math.round(Math.max(0, approval*0.7 - polarization*0.3+20));
+  return { approval, polarization, mobilization, coherence, resonance, trust };
+}
+
+// ─── Análisis con Gemini ──────────────────────────────────────────────────────
+interface GeminiAnalysisResult {
+  summary: string;
+  archetype: keyof typeof ARCHETYPE_CONFIG;
+  archetypeScore: number;
+  archetypeReasoning: string;
+  metrics: { approval:number; polarization:number; mobilization:number; coherence:number; resonance:number; trust:number };
+  emotions: { fear:number; anger:number; hope:number; pride:number; fatigue:number };
+  sentimentOverall: number;
+  keywords: string[];
+  trend: "rising" | "falling" | "stable";
+  narratives: { positive: string[]; negative: string[] };
+  aiPowered: true;
+}
+
+async function analyzeWithGemini(
+  name: string,
+  articles: Array<{ title?: string; description?: string; source_name?: string; pubDate?: string; link?: string }>
+): Promise<GeminiAnalysisResult | null> {
+  if (!GEMINI_API_KEY) return null;
+
+  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+  const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+
+  const articlesText = articles
+    .slice(0, 8)
+    .map((a, i) => `[${i+1}] ${a.title || "Sin título"} — ${a.source_name || "?"} (${a.pubDate?.slice(0,10)||"?"})\n${a.description?.slice(0,200)||""}`)
+    .join("\n\n");
+
+  const prompt = `Sos un experto en análisis sociopolítico argentino. Analizá la figura pública "${name}" basándote en las siguientes noticias recientes y tu conocimiento general.
+
+NOTICIAS RECIENTES:
+${articlesText || "(Sin noticias disponibles — usá tu conocimiento general)"}
+
+Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdown, sin backticks):
+{
+  "summary": "Resumen narrativo de 2-3 oraciones que capture la esencia actual de la figura en la opinión pública argentina. Sé específico, cita hechos reales.",
+  "archetype": "uno de: hero | villain | sage | trickster | guardian",
+  "archetypeScore": <número 0-100 indicando confianza en el arquetipo>,
+  "archetypeReasoning": "Explicación de 1-2 oraciones del por qué este arquetipo. Qué narrativa colectiva lo sostiene.",
+  "metrics": {
+    "approval": <0-100, aprobación general en la narrativa mediática>,
+    "polarization": <0-100, cuánto divide a la sociedad>,
+    "mobilization": <0-100, capacidad de movilizar/generar acción>,
+    "coherence": <0-100, consistencia percibida entre discurso y actos>,
+    "resonance": <0-100, impacto real en la conversación pública>,
+    "trust": <0-100, credibilidad percibida>
+  },
+  "emotions": {
+    "fear": <0-100, nivel de miedo/incertidumbre/inseguridad generado>,
+    "anger": <0-100, nivel de descontento/bronca social>,
+    "hope": <0-100, nivel de esperanza/felicidad/alivio>,
+    "pride": <0-100, nivel de orgullo nacional o sectorial>,
+    "fatigue": <0-100, nivel de fatiga social o burnout sobre la figura/tema>
+  },
+  "sentimentOverall": <número entre -1.0 y 1.0, siendo -1 muy negativo y 1 muy positivo>,
+  "keywords": ["palabra1", "palabra2", "palabra3", "palabra4", "palabra5"],
+  "trend": "rising | falling | stable",
+  "narratives": {
+    "positive": ["narrativa favorable 1", "narrativa favorable 2"],
+    "negative": ["narrativa crítica 1", "narrativa crítica 2"]
+  }
+}`;
+
+  try {
+    const result = await model.generateContent(prompt);
+    const text = result.response.text().trim();
+    // Limpiar posibles backticks de markdown que Gemini a veces agrega
+    const clean = text.replace(/^```json?\n?/,"").replace(/\n?```$/,"").trim();
+    const parsed = JSON.parse(clean);
+    return { ...parsed, aiPowered: true };
+  } catch (err) {
+    console.error("Gemini parse error:", err);
+    return null;
+  }
+}
+
+// ─── Narrativas emergentes (trending) ────────────────────────────────────────
+async function fetchEmergingNarratives(): Promise<Array<{keyword:string; volume:number; trend:string; sentiment:number; sample:string}>> {
+  if (!NEWSDATA_API_KEY) return [];
+
+  const topics = ["economía argentina", "política argentina", "inflación argentina", "elecciones argentina", "derechos argentina"];
+
+  try {
+    const results = await Promise.all(
+      topics.slice(0, 3).map(async (topic) => {
+        const params = new URLSearchParams({
+          apikey: NEWSDATA_API_KEY!,
+          q: topic,
+          language: "es",
+          country: "ar",
+          size: "5",
+        });
+        const res = await fetch(`${NEWSDATA_API_URL}?${params}`);
+        if (!res.ok) return null;
+        const data = await res.json();
+        const articles = data.results || [];
+        const sentiment = articles.reduce((acc: number, a: { title?: string }) =>
+          acc + heuristicSentiment(a.title||""), 0) / Math.max(articles.length, 1);
+        return {
+          keyword: topic.replace(" argentina",""),
+          volume: articles.length * 10 + Math.floor(Math.random()*40),
+          trend: sentiment > 0 ? "↑ creciendo" : "↓ tensión",
+          sentiment,
+          sample: articles[0]?.title || "",
+        };
+      })
+    );
+    return results.filter(Boolean) as Array<{keyword:string; volume:number; trend:string; sentiment:number; sample:string}>;
+  } catch { return []; }
+}
+
+// ─── Endpoint principal GET ───────────────────────────────────────────────────
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const name = searchParams.get("name");
+  const forceRefresh = searchParams.get("refresh") === "true";
+
+  // Endpoint especial: narrativas emergentes
+  if (searchParams.get("mode") === "emerging") {
+    const data = await fetchEmergingNarratives();
+    return NextResponse.json({ narratives: data, updatedAt: new Date().toISOString() });
+  }
+
+  if (!name) {
+    return NextResponse.json({ error: "Parámetro 'name' requerido" }, { status: 400 });
+  }
+
+  const id = nameToId(name);
+
+  // 1. Caché (salvo que pidan refresh explícito)
+  if (!forceRefresh) {
+    const cached = analysisCache.get(id);
+    if (cached && Date.now() < cached.expiresAt) {
+      return NextResponse.json({ ...cached.data, fromCache: true });
+    }
+  }
+
+  // 2. Mock conocido (no consume APIs)
+  if (!forceRefresh) {
+    const mock = MOCK_PERSONALITIES.find(p => p.id === id || p.name.toLowerCase() === name.toLowerCase());
+    if (mock) {
+      analysisCache.set(id, { data: mock, expiresAt: Date.now() + 30*24*60*60*1000 });
+      return NextResponse.json({ ...mock, fromCache: false, aiPowered: false });
+    }
+  }
+
+  // 3. Noticias reales
+  const articles = await fetchPersonalityNews(name);
+
+  // 4. Análisis con Gemini (si hay API key) o heurístico
+  const geminiResult = await analyzeWithGemini(name, articles);
+
+  const { MOCK_PROVINCE_SENTIMENTS } = await import("@/lib/types");
+
+  let analysis;
+
+  if (geminiResult) {
+    // ── Análisis potenciado por Gemini ──
+    const provinceData = Object.fromEntries(
+      Object.keys(MOCK_PROVINCE_SENTIMENTS).map(k => [
+        k,
+        {
+          sentiment: Math.max(-1, Math.min(1, geminiResult.sentimentOverall + (Math.random()-0.5)*0.35)),
+          intensity: 0.3 + Math.random()*0.5,
+          dominantArchetype: geminiResult.archetype,
+        },
+      ])
+    );
+
+    const topNews = articles.slice(0,5).map((a: { title?: string; source_name?: string; link?: string; pubDate?: string }) => ({
+      title: a.title || "Sin título",
+      source: a.source_name || "Desconocido",
+      url: a.link || "#",
+      publishedAt: a.pubDate || new Date().toISOString(),
+      sentiment: heuristicSentiment(a.title || ""),
+    }));
+
+    analysis = {
+      id,
+      name,
+      category: "politica" as const,
+      archetype: geminiResult.archetype,
+      archetypeScore: geminiResult.archetypeScore,
+      archetypeReasoning: geminiResult.archetypeReasoning,
+      summary: geminiResult.summary,
+      analyzedAt: new Date().toISOString(),
+      metrics: geminiResult.metrics,
+      emotions: geminiResult.emotions,
+      sentimentOverall: geminiResult.sentimentOverall,
+      provinceData,
+      topNews,
+      keywords: geminiResult.keywords,
+      trend: geminiResult.trend,
+      narratives: geminiResult.narratives,
+      aiPowered: true,
+    };
+  } else {
+    // ── Fallback heurístico ──
+    const topNews = articles.slice(0,5).map((a: { title?: string; source_name?: string; link?: string; pubDate?: string }) => ({
+      title: a.title || "Sin título",
+      source: a.source_name || "Desconocido",
+      url: a.link || "#",
+      publishedAt: a.pubDate || new Date().toISOString(),
+      sentiment: heuristicSentiment(a.title || ""),
+    }));
+
+    const metrics = heuristicMetrics(articles);
+    const archetype = heuristicArchetype(metrics);
+    const sentimentOverall = (metrics.approval - 50) / 50;
+
+    const provinceData = Object.fromEntries(
+      Object.keys(MOCK_PROVINCE_SENTIMENTS).map(k => [
+        k,
+        {
+          sentiment: Math.max(-1, Math.min(1, sentimentOverall + (Math.random()-0.5)*0.4)),
+          intensity: 0.3 + Math.random()*0.5,
+          dominantArchetype: archetype,
+        },
+      ])
+    );
+
+    const allText = articles.map((a: { title?: string }) => a.title||"").join(" ").toLowerCase();
+    const stopWords = new Set(["el","la","de","en","y","a","que","es","se","del","un","una","con","por","para","al","lo","su","le","los","las","su","sus"]);
+    const words = allText.split(/\s+/).filter((w: string) => w.length > 4 && !stopWords.has(w));
+    const freq = words.reduce<Record<string,number>>((acc: Record<string,number>, w: string) => { acc[w]=(acc[w]||0)+1; return acc; }, {});
+    const keywords = Object.entries(freq).sort((a,b) => (b[1] as number)-(a[1] as number)).slice(0,8).map(([k]) => k);
+
+    analysis = {
+      id,
+      name,
+      category: "politica" as const,
+      archetype,
+      archetypeScore: Math.round(60 + Math.random()*25),
+      summary: articles.length > 0
+        ? `Análisis basado en ${articles.length} artículos recientes. ${ARCHETYPE_CONFIG[archetype].description}`
+        : `No se encontraron noticias recientes sobre ${name}. Mostrando análisis estimado.`,
+      analyzedAt: new Date().toISOString(),
+      metrics,
+      emotions: {
+        fear: Math.max(0, 50 - sentimentOverall * 50 + (Math.random() * 20 - 10)),
+        anger: Math.max(0, 50 - sentimentOverall * 50 + (Math.random() * 20 - 10)),
+        hope: Math.max(0, 50 + sentimentOverall * 50 + (Math.random() * 20 - 10)),
+        pride: Math.max(0, 50 + sentimentOverall * 50 + (Math.random() * 20 - 10)),
+        fatigue: Math.min(100, metrics.polarization * 0.8 + (Math.random() * 20)),
+      },
+      sentimentOverall,
+      provinceData,
+      topNews,
+      keywords,
+      trend: sentimentOverall > 0.1 ? "rising" : sentimentOverall < -0.1 ? "falling" : "stable",
+      aiPowered: false,
+    };
+  }
+
+  analysisCache.set(id, { data: analysis, expiresAt: Date.now() + 30*24*60*60*1000 });
+  return NextResponse.json(analysis);
+}
+
+export async function DELETE(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const name = searchParams.get("name");
+  if (name) analysisCache.delete(nameToId(name));
+  return NextResponse.json({ success: true });
+}
