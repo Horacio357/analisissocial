@@ -41,7 +41,7 @@ const personalities = [
 export const TOP_20_PERSONALITIES: PersonalityAnalysis[] = personalities.map((p, i) => ({
   id: p.name.toLowerCase().replace(/\s+/g, '-'),
   name: p.name,
-  category: p.cat as "politica" | "espectaculo" | "deportes",
+  category: (p.cat === "espectaculo" ? "entretenimiento" : p.cat) as "politica" | "entretenimiento" | "deportes",
   archetype: p.arch as ArchetypeKey,
   archetypeScore: Math.round(70 + pseudoRandom(i + 5) * 25),
   summary: `Análisis heurístico de ${p.name}. Tendencias y métricas basadas en percepciones de la opinión pública.`,
@@ -59,5 +59,5 @@ export const TOP_20_PERSONALITIES: PersonalityAnalysis[] = personalities.map((p,
   provinceData: MOCK_PROVINCE_SENTIMENTS,
   topNews: [],
   keywords: ["tendencia", "argentina", p.name.split(" ")[0].toLowerCase()],
-  trend: p.s > 0.2 ? "rising" : p.s < -0.2 ? "falling" : "stable",
+  trend: (p.s > 0.2 ? "rising" : p.s < -0.2 ? "falling" : "stable") as "rising" | "falling" | "stable",
 })).sort((a, b) => b.metrics.resonance - a.metrics.resonance); // Ordenados por resonancia/impacto

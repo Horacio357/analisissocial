@@ -129,7 +129,7 @@ Analizá el pulso social argentino en: ojosocial.ar`;
       {/* Botón trigger */}
       <button
         onClick={() => {
-          if (navigator.share) {
+          if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
             handleNativeShare();
           } else {
             setOpen(true);
