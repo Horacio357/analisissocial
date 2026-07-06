@@ -10,8 +10,11 @@ import NewsTickerBar from "@/components/NewsTickerBar";
 import PersonalityComparator from "@/components/PersonalityComparator";
 import NarrativasEmergentes from "@/components/NarrativasEmergentes";
 import Top20Ranking from "@/components/Top20Ranking";
+import UserDashboard from "@/components/UserDashboard";
 import { TOP_20_PERSONALITIES } from "@/lib/top20";
 import { PersonalityAnalysis } from "@/lib/types";
+import { useAuth } from "@/components/AuthProvider";
+import { createClient } from "@/lib/supabase/client";
 import { MOCK_PROVINCE_SENTIMENTS, MOCK_PERSONALITIES } from "@/lib/types";
 import { ARCHETYPE_CONFIG } from "@/lib/utils";
 
@@ -19,14 +22,27 @@ export default function HomePage() {
   const [currentAnalysis, setCurrentAnalysis] = useState<PersonalityAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+  const { user } = useAuth();
+  const supabase = createClient();
 
-  const handleResult = useCallback((analysis: PersonalityAnalysis) => {
-    setCurrentAnalysis(analysis);
+  const handleResult = async (data: PersonalityAnalysis) => {
+    setCurrentAnalysis(data);
+    setIsAnalyzing(false);
+
+    // Si hay usuario logueado, guardar el análisis en su historial
+    if (user) {
+      await supabase.from("saved_analyses").insert({
+        user_id: user.id,
+        personality_name: data.name,
+        analysis_data: data
+      });
+    }
+
     // Scroll a los resultados
     setTimeout(() => {
       document.getElementById("analysis-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
-  }, []);
+  };
 
   const handleReanalyze = useCallback(async (name: string) => {
     setIsAnalyzing(true);
@@ -128,10 +144,12 @@ export default function HomePage() {
       {/* ─── NEWS TICKER ─────────────────────────────────────────────────── */}
       <NewsTickerBar />
 
-      {/* ─── HERO SECTION ─────────────────────────────────────────────────── */}
-      <section id="dashboard" style={{ padding: "4rem 1.5rem 3rem" }}>
-        <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
+      <main style={{ padding: "4rem 2rem 2rem", maxWidth: "1440px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "2rem" }}>
+        
+        <UserDashboard onSelectAnalysis={setCurrentAnalysis} />
 
+        {/* ─── HERO SECTION ─────────────────────────────────────────────────── */}
+        <section id="dashboard" style={{ paddingTop: "1rem" }}>
           {/* Tagline */}
           <div style={{ textAlign: "center", marginBottom: "3rem" }}>
             <div style={{
@@ -274,8 +292,7 @@ export default function HomePage() {
             <Top20Ranking onSelectPersonality={setCurrentAnalysis} />
           </div>
 
-        </div>
-      </section>
+        </section>
 
       {/* ─── ANALYSIS RESULTS ─────────────────────────────────────────────── */}
       <section id="analysis-section" style={{ padding: "2rem 1.5rem" }}>
@@ -538,6 +555,7 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+    </main>
 
       {/* ─── FOOTER ─────────────────────────────────────────────────────────── */}
       <footer style={{

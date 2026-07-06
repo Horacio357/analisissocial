@@ -199,7 +199,8 @@ export async function GET(request: NextRequest) {
   if (!forceRefresh) {
     const cached = analysisCache.get(id);
     if (cached && Date.now() < cached.expiresAt) {
-      return NextResponse.json({ ...cached.data, fromCache: true });
+      const dataObj = typeof cached.data === "string" ? JSON.parse(cached.data) : cached.data;
+      return NextResponse.json({ ...dataObj, fromCache: true });
     }
   }
 
@@ -290,7 +291,7 @@ export async function GET(request: NextRequest) {
     const allText = articles.map((a: { title?: string }) => a.title||"").join(" ").toLowerCase();
     const stopWords = new Set(["el","la","de","en","y","a","que","es","se","del","un","una","con","por","para","al","lo","su","le","los","las","su","sus"]);
     const words = allText.split(/\s+/).filter((w: string) => w.length > 4 && !stopWords.has(w));
-    const freq = words.reduce<Record<string,number>>((acc: Record<string,number>, w: string) => { acc[w]=(acc[w]||0)+1; return acc; }, {});
+    const freq = words.reduce((acc: Record<string,number>, w: string) => { acc[w] = (acc[w]||0)+1; return acc; }, {} as Record<string, number>);
     const keywords = Object.entries(freq).sort((a,b) => (b[1] as number)-(a[1] as number)).slice(0,8).map(([k]) => k);
 
     analysis = {

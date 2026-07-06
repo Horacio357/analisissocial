@@ -391,13 +391,37 @@ export default function PersonalityComparator() {
         >
           <GitCompare size={18} color="var(--accent-primary)" />
         </div>
-        <div>
-          <h2 style={{ fontFamily: "Outfit", fontSize: "1.2rem", fontWeight: 800 }}>
-            Comparador de Personalidades
-          </h2>
-          <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
-            Compará arquetipos, métricas y percepción territorial
-          </p>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div>
+              <h2 style={{ fontFamily: "Outfit", fontSize: "1.2rem", fontWeight: 800 }}>
+                Comparador de Personalidades
+              </h2>
+              <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+                Compará arquetipos, métricas y percepción territorial
+              </p>
+            </div>
+            {(personA || personB) && (
+              <button
+                onClick={() => { setPersonA(null); setPersonB(null); }}
+                style={{
+                  background: "rgba(239, 68, 68, 0.1)",
+                  border: "1px solid rgba(239, 68, 68, 0.2)",
+                  color: "#ef4444",
+                  padding: "0.4rem 0.8rem",
+                  borderRadius: "var(--radius-sm)",
+                  fontSize: "0.75rem",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  transition: "background 0.2s"
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(239, 68, 68, 0.15)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(239, 68, 68, 0.1)")}
+              >
+                Nueva Comparación
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
