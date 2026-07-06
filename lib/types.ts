@@ -22,6 +22,13 @@ export interface PersonalityAnalysis {
   topNews: NewsItem[];
   keywords: string[];
   trend: "rising" | "falling" | "stable";
+  emotions?: {
+    fear: number;
+    anger: number;
+    hope: number;
+    pride: number;
+    fatigue: number;
+  };
 }
 
 export interface ProvinceMetric {
