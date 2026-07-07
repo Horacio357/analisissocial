@@ -99,6 +99,8 @@ async function analyzeWithGemini(
 NOTICIAS RECIENTES:
 ${articlesText || "(Sin noticias disponibles — usá tu conocimiento general)"}
 
+REGLA DE POLARIZACIÓN: Si la métrica de 'polarization' que calcules es menor a 40 (baja polarización), incluí obligatoriamente en las 'strategicRecommendations' al menos un tip sobre de qué manera polarizar y qué temas sensibles o controversiales debería tocar la figura para generar mayor tracción, debate y salir de la apatía.
+
 Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdown, sin backticks):
 {
   "summary": "Resumen narrativo de 2-3 oraciones que capture la esencia actual de la figura en la opinión pública argentina. Sé específico, cita hechos reales.",

@@ -38,6 +38,8 @@ Datos del Adversario (${candidateB.name}):
 - Arquetipo: ${candidateB.archetype} (Puntaje: ${candidateB.archetypeScore})
 - Aprobación: ${candidateB.metrics.approval} | Polarización: ${candidateB.metrics.polarization} | Confianza: ${candidateB.metrics.trust}
 
+REGLA DE POLARIZACIÓN: Si la polarización del Cliente (${candidateA.name}) es menor a 40 (baja polarización o apatía), incluí en tus 'strategicRecommendations' de qué manera polarizar directamente contra ${candidateB.name} y qué temas controversiales debería usar para traccionar mayor debate en la agenda pública.
+
 Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdown, sin backticks):
 {
   "verdict": "Resumen ejecutivo de 2 oraciones evaluando quién domina el escenario y por qué.",
