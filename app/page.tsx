@@ -11,6 +11,7 @@ import PersonalityComparator from "@/components/PersonalityComparator";
 import NarrativasEmergentes from "@/components/NarrativasEmergentes";
 import Top20Ranking from "@/components/Top20Ranking";
 import UserDashboard from "@/components/UserDashboard";
+import ProTools from "@/components/ProTools";
 import { TOP_20_PERSONALITIES } from "@/lib/top20";
 import { PersonalityAnalysis } from "@/lib/types";
 import { useAuth } from "@/components/AuthProvider";
@@ -324,7 +325,10 @@ export default function HomePage() {
 
           {currentAnalysis && !isAnalyzing && (
             <div style={{ animation: "fadeInUp 0.5s ease both" }}>
-              <div style={{ textAlign: "center", marginBottom: "2rem" }}>
+              <ProTools targetId="pdf-report-container" reportName={currentAnalysis.name} />
+              
+              <div id="pdf-report-container" style={{ padding: "1rem", background: "var(--bg-base)", borderRadius: "var(--radius-lg)" }}>
+                <div style={{ textAlign: "center", marginBottom: "2rem" }}>
                 <div className="section-label" style={{ justifyContent: "center" }}>Análisis Completo</div>
                 <h2 style={{ fontFamily: "Outfit", fontSize: "1.8rem", fontWeight: 800 }}>
                   Perfil de <span className="text-gradient">{currentAnalysis.name}</span>
@@ -389,6 +393,7 @@ export default function HomePage() {
                     </div>
                   )}
                 </div>
+              </div>
               </div>
             </div>
           )}
