@@ -21,6 +21,7 @@ export interface PersonalityAnalysis {
   provinceData: Record<string, ProvinceMetric>;
   topNews: NewsItem[];
   keywords: string[];
+  strategicRecommendations?: string[];
   trend: "rising" | "falling" | "stable";
   emotions?: {
     fear: number;

@@ -126,7 +126,12 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
   "narratives": {
     "positive": ["narrativa favorable 1", "narrativa favorable 2"],
     "negative": ["narrativa crítica 1", "narrativa crítica 2"]
-  }
+  },
+  "strategicRecommendations": [
+    "Recomendación accionable 1 (ej: Bajar el tono de confrontación en medios tradicionales)",
+    "Recomendación accionable 2",
+    "Recomendación accionable 3"
+  ]
 }`;
 
   try {

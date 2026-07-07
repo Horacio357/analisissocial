@@ -12,6 +12,7 @@ import NarrativasEmergentes from "@/components/NarrativasEmergentes";
 import Top20Ranking from "@/components/Top20Ranking";
 import UserDashboard from "@/components/UserDashboard";
 import ProTools from "@/components/ProTools";
+import IntelligenceHub from "@/components/IntelligenceHub";
 import { TOP_20_PERSONALITIES } from "@/lib/top20";
 import { PersonalityAnalysis } from "@/lib/types";
 import { useAuth } from "@/components/AuthProvider";
@@ -393,6 +394,9 @@ export default function HomePage() {
                       </div>
                     </div>
                   )}
+
+                  {/* ─── CENTRO DE INTELIGENCIA ─── */}
+                  <IntelligenceHub analysis={currentAnalysis} />
                 </div>
               </div>
               </div>
