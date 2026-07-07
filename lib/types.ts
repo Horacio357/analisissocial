@@ -106,6 +106,11 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
     provinceData: MOCK_PROVINCE_SENTIMENTS,
     topNews: [],
     keywords: ["libertad", "ajuste", "motosierra", "dolarización", "reforma"],
+    strategicRecommendations: [
+      "Focalizar pauta digital en TikTok para re-captar voto joven con foco en baja de inflación.",
+      "Moderar vocería en CABA; los niveles de fatiga social sugieren saturación del discurso confrontativo.",
+      "Instalar narrativa de 'estabilidad a largo plazo' para contrarrestar la métrica de Miedo actual."
+    ],
     trend: "stable",
   },
   {
@@ -124,6 +129,11 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
     ),
     topNews: [],
     keywords: ["campeón", "Mundial", "Inter Miami", "gol", "récord"],
+    strategicRecommendations: [
+      "Vincular marca personal únicamente a causas de consenso nacional (ej. solidaridad, deporte juvenil).",
+      "Evitar posicionamientos ideológicos que rompan el 100% de Aprobación transversal.",
+      "Maximizar activaciones de marketing en el interior del país, donde el sentimiento es unánime."
+    ],
     trend: "stable",
   },
   {
@@ -139,7 +149,12 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
     sentimentOverall: -0.32,
     provinceData: MOCK_PROVINCE_SENTIMENTS,
     topNews: [],
-    keywords: ["kirchnerismo", "peronismo", "juicio", "condena", "partido"],
-    trend: "falling",
+    keywords: ["conurbano", "oposición", "documento", "PJ", "reaparición"],
+    strategicRecommendations: [
+      "Reforzar el trabajo territorial en PBA para retener el núcleo duro de Movilización.",
+      "Evitar apariciones públicas frecuentes para no incrementar la Polarización (actualmente en 89%).",
+      "Construir voceros alternativos para llegar al centro del electorado sin fricción."
+    ],
+    trend: "rising",
   },
 ];

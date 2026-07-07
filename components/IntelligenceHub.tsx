@@ -71,7 +71,7 @@ export default function IntelligenceHub({ analysis }: IntelligenceHubProps) {
             gap: "0.5rem"
           }}>
             <Lightbulb size={16} color="#c084fc" />
-            Insights Estratégicos
+            Directivas para Comunicación & PR
           </h4>
           <ul style={{ margin: 0, paddingLeft: "0", listStyle: "none", display: "flex", flexDirection: "column", gap: "0.8rem" }}>
             {analysis.strategicRecommendations!.map((rec, i) => (
