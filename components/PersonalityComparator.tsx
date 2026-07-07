@@ -70,7 +70,7 @@ function MiniSearch({
         onSelect(data);
         setQuery(data.name);
       } catch {
-        setError("No se pudo obtener el análisis. Intentá con otro nombre.");
+        setError("Error al contactar con el motor IA. Por favor, intentá de nuevo más tarde.");
       } finally {
         setLoading(false);
       }

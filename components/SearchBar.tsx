@@ -57,12 +57,12 @@ export default function SearchBar({ onResult, onLoading }: SearchBarProps) {
 
     try {
       const res = await fetch(`/api/analyze?name=${encodeURIComponent(name.trim())}`);
-      if (!res.ok) throw new Error("Error al analizar la personalidad");
+      if (!res.ok) throw new Error("Error al contactar con el motor IA. Por favor, intentá de nuevo más tarde.");
       const data: PersonalityAnalysis = await res.json();
       onResult(data);
       setQuery(data.name);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Error desconocido");
+      setError(e instanceof Error ? e.message : "Ocurrió un error inesperado. Por favor, intentá más tarde.");
     } finally {
       setIsLoading(false);
       onLoading?.(false);
