@@ -13,19 +13,42 @@ const analysisCache = new Map<string, { data: unknown; expiresAt: number }>();
 // ─── NewsData ──────────────────────────────────────────────────────────────────
 async function fetchPersonalityNews(name: string) {
   if (!NEWSDATA_API_KEY) return [];
-  const params = new URLSearchParams({
+  
+  // Intento 1: Búsqueda exacta
+  const exactParams = new URLSearchParams({
     apikey: NEWSDATA_API_KEY,
     q: `"${name}"`,
     language: "es",
     country: "ar",
     size: "10",
   });
+
   try {
-    const res = await fetch(`${NEWSDATA_API_URL}?${params}`);
-    if (!res.ok) return [];
-    const data = await res.json();
+    let res = await fetch(`${NEWSDATA_API_URL}?${exactParams}`);
+    let data = res.ok ? await res.json() : { results: [] };
+    
+    // Intento 2: Si la búsqueda exacta falla o trae muy poco, usar búsqueda flexible
+    if (!data.results || data.results.length < 3) {
+      const flexibleParams = new URLSearchParams({
+        apikey: NEWSDATA_API_KEY,
+        q: name, // Sin comillas estrictas
+        language: "es",
+        country: "ar",
+        size: "10",
+      });
+      res = await fetch(`${NEWSDATA_API_URL}?${flexibleParams}`);
+      const flexData = res.ok ? await res.json() : { results: [] };
+      
+      // Combinar y remover duplicados por ID de artículo o link
+      const combined = [...(data.results || []), ...(flexData.results || [])];
+      const unique = Array.from(new Map(combined.map(item => [item.link, item])).values());
+      data.results = unique.slice(0, 10);
+    }
+
     return data.results || [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 
 // ─── Heurística de fallback (sin Gemini) ─────────────────────────────────────
