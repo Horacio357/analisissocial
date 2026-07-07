@@ -128,13 +128,7 @@ Analizá el pulso social argentino en: ojosocial.ar`;
     <>
       {/* Botón trigger */}
       <button
-        onClick={() => {
-          if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
-            handleNativeShare();
-          } else {
-            setOpen(true);
-          }
-        }}
+        onClick={() => setOpen(true)}
         className="btn-ghost"
         style={{ padding: "0.45rem 0.875rem", fontSize: "0.78rem", gap: "0.4rem" }}
         title="Compartir análisis"
