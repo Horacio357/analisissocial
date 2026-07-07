@@ -167,8 +167,37 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
     const parsed = JSON.parse(clean);
     return { ...parsed, aiPowered: true };
   } catch (err) {
-    console.error("Gemini parse error:", err);
-    return null;
+    console.error("Gemini error, attempting Groq fallback:", err);
+    try {
+      const GROQ_API_KEY = process.env.GROQ_API_KEY;
+      if (!GROQ_API_KEY) throw new Error("No Groq API Key available for fallback");
+      
+      const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${GROQ_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "llama3-70b-8192",
+          messages: [{ role: "user", content: prompt }],
+          temperature: 0.3
+        })
+      });
+
+      if (!groqRes.ok) {
+         throw new Error(`Groq API error: ${groqRes.statusText}`);
+      }
+
+      const groqData = await groqRes.json();
+      const text = groqData.choices[0].message.content.trim();
+      const clean = text.replace(/^```json?\n?/i,"").replace(/\n?```$/i,"").trim();
+      const parsed = JSON.parse(clean);
+      return { ...parsed, aiPowered: true, fromFallback: true };
+    } catch (groqErr) {
+      console.error("Groq fallback error:", groqErr);
+      return null;
+    }
   }
 }
 
