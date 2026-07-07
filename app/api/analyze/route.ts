@@ -128,7 +128,7 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
     "negative": ["narrativa crítica 1", "narrativa crítica 2"]
   },
   "strategicRecommendations": [
-    "Recomendación accionable 1 (ej: Bajar el tono de confrontación en medios tradicionales)",
+    "Recomendación accionable 1",
     "Recomendación accionable 2",
     "Recomendación accionable 3"
   ]
@@ -264,6 +264,7 @@ export async function GET(request: NextRequest) {
       provinceData,
       topNews,
       keywords: geminiResult.keywords,
+      strategicRecommendations: geminiResult.strategicRecommendations || [],
       trend: geminiResult.trend,
       narratives: geminiResult.narratives,
       aiPowered: true,
@@ -320,7 +321,12 @@ export async function GET(request: NextRequest) {
       sentimentOverall,
       provinceData,
       topNews,
-      keywords,
+      keywords: keywords.length > 0 ? keywords : [name.split(" ")[0].toLowerCase(), "política"],
+      strategicRecommendations: [
+        "Aumentar la presencia territorial en zonas donde la favorabilidad es inferior a la media nacional.",
+        "Reforzar el discurso en medios digitales para conectar con audiencias sub-40.",
+        "Monitorear las narrativas de la oposición para anticipar posibles crisis reputacionales."
+      ],
       trend: sentimentOverall > 0.1 ? "rising" : sentimentOverall < -0.1 ? "falling" : "stable",
       aiPowered: false,
     };

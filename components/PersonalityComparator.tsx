@@ -16,6 +16,8 @@ import { PersonalityAnalysis } from "@/lib/types";
 import { ARCHETYPE_CONFIG, sentimentToColor, sentimentToLabel } from "@/lib/utils";
 import RadarChart from "./RadarChart";
 import HeatMapArgentina from "./HeatMapArgentina";
+import ProTools from "./ProTools";
+import ComparativeStrategy from "./ComparativeStrategy";
 
 // ─── Mini buscador interno ────────────────────────────────────────────────────
 const QUICK_NAMES = [
@@ -358,6 +360,9 @@ export default function PersonalityComparator() {
   const [personA, setPersonA] = useState<PersonalityAnalysis | null>(null);
   const [personB, setPersonB] = useState<PersonalityAnalysis | null>(null);
   const [activeTab, setActiveTab] = useState<"radar" | "metrics" | "map">("radar");
+  
+  const [comparativeData, setComparativeData] = useState<{verdict: string; strategicRecommendations: string[]} | null>(null);
+  const [loadingStrategy, setLoadingStrategy] = useState(false);
 
   const colorA = "var(--accent-primary)"; // cyan
   const colorB = "#a78bfa"; // violeta
@@ -368,15 +373,42 @@ export default function PersonalityComparator() {
   const bothLoaded = personA && personB;
 
   const TABS = [
-    { id: "radar", label: "🕸️ Radar" },
-    { id: "metrics", label: "📊 Métricas" },
-    { id: "map", label: "🗺️ Mapa" },
-  ] as const;
+    { id: "radar", label: "Radar" },
+    { id: "metrics", label: "Cara a Cara" },
+    { id: "map", label: "Territorio" },
+  ];
+
+  const generateStrategy = async () => {
+    if (!personA || !personB) return;
+    setLoadingStrategy(true);
+    try {
+      const res = await fetch("/api/compare", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ candidateA: personA, candidateB: personB })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setComparativeData(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingStrategy(false);
+    }
+  };
 
   return (
-    <div className="glass-card animate-fade-up" style={{ border: "1px solid rgba(0,212,255,0.12)" }}>
+    <div
+      className="glass-card"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "1.5rem",
+      }}
+    >
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
         <div
           style={{
             width: "40px",
@@ -464,7 +496,12 @@ export default function PersonalityComparator() {
 
       {/* ─── Resultados de la comparación ─────────────────────────────── */}
       {bothLoaded ? (
-        <div style={{ animation: "fadeInUp 0.4s ease both" }}>
+        <div id="pdf-comparator-container" style={{ animation: "fadeInUp 0.4s ease both" }}>
+          
+          <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
+            <ProTools targetId="pdf-comparator-container" reportName={`Comparativa_${personA!.name}_vs_${personB!.name}`} />
+          </div>
+
           {/* Encabezado de la comparación */}
           <div className="responsive-comparator"
             style={{
@@ -708,6 +745,39 @@ export default function PersonalityComparator() {
               </div>
             </div>
           )}
+
+          {/* Estrategia Comparativa */}
+          {!comparativeData ? (
+            <button
+              onClick={generateStrategy}
+              disabled={loadingStrategy}
+              style={{
+                width: "100%",
+                padding: "1rem",
+                marginTop: "1rem",
+                background: "linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1))",
+                border: "1px solid rgba(245, 158, 11, 0.2)",
+                borderRadius: "var(--radius-md)",
+                color: "#f59e0b",
+                fontWeight: 700,
+                fontSize: "0.95rem",
+                cursor: loadingStrategy ? "not-allowed" : "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+                transition: "all 0.2s"
+              }}
+              onMouseEnter={(e) => { if(!loadingStrategy) e.currentTarget.style.background = "linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(239, 68, 68, 0.15))" }}
+              onMouseLeave={(e) => { if(!loadingStrategy) e.currentTarget.style.background = "linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1))" }}
+            >
+              {loadingStrategy ? <Loader2 size={18} className="spin" /> : <GitCompare size={18} />}
+              {loadingStrategy ? "Analizando variables de combate..." : "Generar Estrategia Competitiva (IA)"}
+            </button>
+          ) : (
+            <ComparativeStrategy verdict={comparativeData.verdict} recommendations={comparativeData.strategicRecommendations} />
+          )}
+
         </div>
       ) : (
         /* Estado vacío */
