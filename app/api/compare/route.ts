@@ -3,6 +3,9 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
+// Caché en memoria para ahorrar tokens (se resetea con cada deploy)
+const compareCache = new Map<string, { data: any; expiresAt: number }>();
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -12,16 +15,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Se requieren los datos de ambos candidatos" }, { status: 400 });
     }
 
+    const cacheKey = `${candidateA.id || candidateA.name}_vs_${candidateB.id || candidateB.name}`;
+    const cached = compareCache.get(cacheKey);
+    if (cached && Date.now() < cached.expiresAt) {
+      return NextResponse.json({ ...cached.data, fromCache: true });
+    }
+
     if (!GEMINI_API_KEY) {
       // Fallback si no hay API key
-      return NextResponse.json({
+      const fallbackData = {
         strategicRecommendations: [
           `Focalizar esfuerzos de campaña digital en los territorios donde ${candidateA.name} presenta mayor confianza que ${candidateB.name}.`,
           `Desarrollar una narrativa de contraste basada en el arquetipo de ${candidateA.archetype}.`,
           `Optimizar el discurso en redes sociales para capitalizar las debilidades detectadas en el adversario.`
         ],
         verdict: "Análisis generado por heurística local debido a la falta de conexión con el motor IA."
-      });
+      };
+      compareCache.set(cacheKey, { data: fallbackData, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 });
+      return NextResponse.json(fallbackData);
     }
 
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
@@ -55,7 +66,8 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
     const clean = text.replace(/^```json?\n?/, "").replace(/\n?```$/, "").trim();
     const parsed = JSON.parse(clean);
 
-    return NextResponse.json(parsed);
+    compareCache.set(cacheKey, { data: parsed, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 });
+    return NextResponse.json({ ...parsed, fromCache: false });
 
   } catch (error: any) {
     console.error("Gemini Compare Error:", error);
