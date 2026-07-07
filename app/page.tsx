@@ -331,9 +331,7 @@ export default function HomePage() {
                 </h2>
               </div>
 
-              <div style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+              <div className="responsive-grid-2" style={{
                 gap: "1.5rem",
                 maxWidth: "1100px",
                 margin: "0 auto",
@@ -410,7 +408,7 @@ export default function HomePage() {
 
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
                 gap: "1.5rem",
                 maxWidth: "1100px",
                 margin: "0 auto",

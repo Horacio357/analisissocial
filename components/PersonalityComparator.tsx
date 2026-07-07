@@ -426,11 +426,8 @@ export default function PersonalityComparator() {
       </div>
 
       {/* Buscadores A y B */}
-      <div
+      <div className="responsive-comparator"
         style={{
-          display: "grid",
-          gridTemplateColumns: "1fr auto 1fr",
-          gap: "1rem",
           alignItems: "start",
           marginBottom: "1.5rem",
         }}
@@ -469,11 +466,8 @@ export default function PersonalityComparator() {
       {bothLoaded ? (
         <div style={{ animation: "fadeInUp 0.4s ease both" }}>
           {/* Encabezado de la comparación */}
-          <div
+          <div className="responsive-comparator"
             style={{
-              display: "grid",
-              gridTemplateColumns: "1fr auto 1fr",
-              gap: "1rem",
               alignItems: "center",
               padding: "1rem",
               background: "rgba(255,255,255,0.02)",

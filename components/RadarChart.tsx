@@ -309,9 +309,8 @@ export default function RadarChart({
       {/* Leyenda interactiva de métricas */}
       {showLegend && (
         <div
+          className="responsive-grid-2"
           style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
             gap: "0.4rem",
             width: "100%",
             marginTop: "0.5rem",

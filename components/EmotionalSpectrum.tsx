@@ -51,7 +51,7 @@ export default function EmotionalSpectrum({ analysis }: EmotionalSpectrumProps) 
         </h4>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+      <div className="responsive-grid-2" style={{ gap: "1rem" }}>
         {/* Columna: Emociones de Tensión */}
         <div>
           <div style={{ fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-muted)", marginBottom: "0.5rem" }}>

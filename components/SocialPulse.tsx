@@ -130,7 +130,7 @@ export default function SocialPulse() {
       </div>
 
       {/* Stats grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+      <div className="responsive-grid-2" style={{ gap: "0.75rem" }}>
         <div className="glass-card" style={{ padding: "1rem", border: "1px solid rgba(52,211,153,0.2)" }}>
           <TrendingUp size={16} color="#34d399" style={{ marginBottom: "0.4rem" }} />
           <div style={{ fontSize: "1.6rem", fontFamily: "Outfit", fontWeight: 800, color: "#34d399" }}>

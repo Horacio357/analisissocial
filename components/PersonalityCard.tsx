@@ -171,7 +171,7 @@ export default function PersonalityCard({ analysis, onReanalyze, isPremium = fal
       {(analysis as PersonalityAnalysis & { narratives?: { positive: string[]; negative: string[] } }).narratives && (() => {
         const narr = (analysis as PersonalityAnalysis & { narratives: { positive: string[]; negative: string[] } }).narratives;
         return (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", marginBottom: "1rem" }}>
+          <div className="responsive-grid-2" style={{ gap: "0.5rem", marginBottom: "1rem" }}>
             {narr.positive?.length > 0 && (
               <div style={{
                 padding: "0.6rem", background: "rgba(52,211,153,0.05)",
