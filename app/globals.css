@@ -534,6 +534,9 @@ h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 600; }
 /* ========================================
    RESPONSIVE UTILITIES
    ======================================== */
+.main-container {
+  padding: 4rem 2rem 2rem;
+}
 .responsive-layout {
   display: grid;
   grid-template-columns: 350px 1fr;
@@ -584,6 +587,12 @@ h4, h5, h6 { font-family: 'Outfit', sans-serif; font-weight: 600; }
   .responsive-comparator {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+  }
+  .main-container {
+    padding: 4rem 1rem 1rem !important;
+  }
+  .glass-card {
+    padding: 1.2rem !important;
   }
   .responsive-comparator-arrow {
     transform: rotate(90deg);

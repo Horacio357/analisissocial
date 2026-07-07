@@ -23,6 +23,7 @@ export default function HomePage() {
   const [currentAnalysis, setCurrentAnalysis] = useState<PersonalityAnalysis | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
+  const [showProModal, setShowProModal] = useState(false);
   const { user } = useAuth();
   const supabase = createClient();
 
@@ -135,7 +136,7 @@ export default function HomePage() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <button className="btn-premium" style={{ padding: "0.5rem 1rem", fontSize: "0.8rem" }}>
+            <button className="btn-premium" onClick={() => setShowProModal(true)} style={{ padding: "0.5rem 1rem", fontSize: "0.8rem" }}>
               <Star size={13} /> Premium
             </button>
           </div>
@@ -145,7 +146,7 @@ export default function HomePage() {
       {/* ─── NEWS TICKER ─────────────────────────────────────────────────── */}
       <NewsTickerBar />
 
-      <main style={{ padding: "4rem 2rem 2rem", maxWidth: "1440px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "2rem" }}>
+      <main className="main-container" style={{ maxWidth: "1440px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "2rem" }}>
         
         <UserDashboard onSelectAnalysis={setCurrentAnalysis} />
 
@@ -574,6 +575,54 @@ export default function HomePage() {
           Ecosistema de Inteligencia Colectiva · Análisis Sociopolítico Argentina
         </p>
       </footer>
+
+      {/* Modal Premium Info */}
+      {showProModal && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 9999,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: "rgba(0,0,0,0.8)", backdropFilter: "blur(5px)",
+        }}>
+          <div className="glass-card" style={{ width: "100%", maxWidth: "450px", margin: "1rem", position: "relative", padding: "2rem" }}>
+            <button
+              onClick={() => setShowProModal(false)}
+              style={{
+                position: "absolute", top: "1rem", right: "1rem",
+                background: "rgba(255,255,255,0.05)", border: "1px solid var(--glass-border)",
+                borderRadius: "8px", padding: "0.3rem", cursor: "pointer", color: "var(--text-muted)",
+              }}
+            >
+              X
+            </button>
+            <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
+              <Star size={32} color="#f59e0b" style={{ margin: "0 auto 1rem" }} />
+              <h2 style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 800, marginBottom: "0.5rem" }}>
+                ¡Ya tenés acceso <span className="text-gradient-warm">Premium</span>!
+              </h2>
+              <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+                Estás navegando en la versión PRO. Podés generar reportes ejecutivos en <b>PDF de alta resolución</b> o enviarlos por <b>Email</b> a tus clientes en un click.
+              </p>
+            </div>
+            <div style={{ background: "rgba(0,212,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "8px", padding: "1rem", fontSize: "0.85rem", color: "var(--text-primary)" }}>
+              <p style={{ marginBottom: "0.5rem" }}><b>¿Cómo usarlas?</b></p>
+              <ol style={{ margin: 0, paddingLeft: "1.2rem", color: "var(--text-secondary)" }}>
+                <li style={{ marginBottom: "0.3rem" }}>Buscá o seleccioná a un político.</li>
+                <li>Hacé clic en los botones de "Descargar PDF" o "Enviar por Email" arriba de su perfil.</li>
+              </ol>
+            </div>
+            <button
+              onClick={() => setShowProModal(false)}
+              style={{
+                width: "100%", marginTop: "1.5rem", padding: "0.75rem",
+                background: "var(--accent-primary)", color: "#000", border: "none",
+                borderRadius: "8px", fontWeight: 700, cursor: "pointer",
+              }}
+            >
+              ¡Entendido!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
