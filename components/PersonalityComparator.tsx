@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import {
   GitCompare,
   Search,
@@ -369,6 +369,11 @@ export default function PersonalityComparator() {
 
   const confA = personA ? ARCHETYPE_CONFIG[personA.archetype] : null;
   const confB = personB ? ARCHETYPE_CONFIG[personB.archetype] : null;
+
+  // Resetear la estrategia si cambian los peleadores
+  useEffect(() => {
+    setComparativeData(null);
+  }, [personA, personB]);
 
   const bothLoaded = personA && personB;
 
