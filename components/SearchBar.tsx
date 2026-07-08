@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Search, X, TrendingUp, ChevronRight, Loader2 } from "lucide-react";
 import { PersonalityAnalysis } from "@/lib/types";
 import { ARCHETYPE_CONFIG } from "@/lib/utils";
+import { useAuth } from "@/components/AuthProvider";
 
 const SUGGESTIONS = [
   "Javier Milei", "Lionel Messi", "Cristina Kirchner", "Mauricio Macri",
@@ -19,6 +20,7 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ onResult, onLoading }: SearchBarProps) {
+  const { user } = useAuth();
   const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -50,6 +52,16 @@ export default function SearchBar({ onResult, onLoading }: SearchBarProps) {
 
   const handleAnalyze = useCallback(async (name: string) => {
     if (!name.trim()) return;
+
+    if (!user) {
+      const searches = parseInt(localStorage.getItem("free_searches") || "0");
+      if (searches >= 3) {
+        setError("Límite gratuito alcanzado (3/3). Iniciá sesión o pasate a Premium para seguir analizando.");
+        return;
+      }
+      localStorage.setItem("free_searches", (searches + 1).toString());
+    }
+
     setIsLoading(true);
     setError(null);
     setShowSuggestions(false);
