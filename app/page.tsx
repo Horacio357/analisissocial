@@ -115,7 +115,7 @@ export default function HomePage() {
               { label: "Análisis", href: "#analysis-section" },
               { label: "Comparar", href: "#comparador" },
               { label: "Mapa", href: "#mapa" },
-              { label: "Acerca de", href: "#about" },
+              { label: "Manual de Uso", href: "/manual" },
             ].map(item => (
               <a key={item.label} href={item.href} style={{
                 color: "var(--text-secondary)",

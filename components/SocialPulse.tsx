@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, BarChart3 } from "lucide-react";
+import { Activity, TrendingUp, TrendingDown, AlertTriangle, CheckCircle, BarChart3, CheckCircle2 } from "lucide-react";
+import Tooltip from "@/components/Tooltip";
 import { MOCK_PROVINCE_SENTIMENTS } from "@/lib/types";
 import { sentimentToColor, sentimentToLabel } from "@/lib/utils";
 
@@ -136,14 +137,20 @@ export default function SocialPulse() {
           <div style={{ fontSize: "1.6rem", fontFamily: "Outfit", fontWeight: 800, color: "#34d399" }}>
             {pulse.positiveProvinces}
           </div>
-          <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Provincias en consenso</div>
+          <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            Provincias en consenso
+            <Tooltip content="Zonas donde la figura mantiene un nivel de sentimiento predominantemente positivo y estable." />
+          </div>
         </div>
         <div className="glass-card" style={{ padding: "1rem", border: "1px solid rgba(239,68,68,0.2)" }}>
           <TrendingDown size={16} color="#ef4444" style={{ marginBottom: "0.4rem" }} />
           <div style={{ fontSize: "1.6rem", fontFamily: "Outfit", fontWeight: 800, color: "#ef4444" }}>
             {pulse.negativeProvinces}
           </div>
-          <div style={{ fontSize: "0.72rem", color: "var(--text-muted)" }}>Focos de descontento</div>
+          <div style={{ fontSize: "0.72rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: "0.25rem" }}>
+            Focos de descontento
+            <Tooltip content="Regiones donde el sentimiento negativo es sostenido. Alta probabilidad de conflicto social o resistencia a la narrativa de la figura." />
+          </div>
         </div>
       </div>
 
@@ -155,6 +162,7 @@ export default function SocialPulse() {
             <span style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#f97316" }}>
               Zonas de Alerta
             </span>
+            <Tooltip content="Provincias con picos de negatividad de muy alta intensidad (viralización agresiva)." position="right" />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
             {pulse.alertZones.map((zone, i) => (
@@ -180,6 +188,7 @@ export default function SocialPulse() {
             <span style={{ fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "#10b981" }}>
               Zonas de Consenso
             </span>
+            <Tooltip content="Provincias con picos de positividad estables y alta aprobación." position="right" />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
             {pulse.consensusZones.map((zone, i) => (

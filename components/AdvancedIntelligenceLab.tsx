@@ -1,6 +1,7 @@
 "use client";
 
 import { Activity, Brain, Target, Mic, TrendingUp, Hash } from "lucide-react";
+import Tooltip from "@/components/Tooltip";
 import { PersonalityAnalysis } from "@/lib/types";
 
 export default function AdvancedIntelligenceLab({ analysis }: { analysis: PersonalityAnalysis }) {
@@ -31,6 +32,7 @@ export default function AdvancedIntelligenceLab({ analysis }: { analysis: Person
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
             <Brain size={16} color="#f43f5e" />
             <h4 style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)" }}>Disonancia Cognitiva</h4>
+            <Tooltip content="Mide la brecha (0-100%) entre el discurso oficial y el sentimiento real de la calle. Porcentaje alto = peligro." />
           </div>
           <div style={{ fontSize: "2rem", fontFamily: "Outfit", fontWeight: 900, color: "#f43f5e", marginBottom: "0.5rem" }}>
             {metrics.cognitiveDissonance.gap}%
@@ -45,6 +47,7 @@ export default function AdvancedIntelligenceLab({ analysis }: { analysis: Person
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.75rem" }}>
             <Hash size={16} color="#a855f7" />
             <h4 style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)" }}>Índice de Contagio</h4>
+            <Tooltip content="Velocidad y probabilidad con la que un tema nicho saltará a los medios masivos (0-100)." />
           </div>
           <div style={{ fontSize: "2rem", fontFamily: "Outfit", fontWeight: 900, color: "#a855f7", marginBottom: "0.5rem" }}>
             {metrics.narrativeContagion.index}/100
