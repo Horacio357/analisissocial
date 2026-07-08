@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function ManualPage() {
   return (
-    <div style={{ minHeight: "100vh", background: "var(--bg-base)", color: "var(--text-primary)", fontFamily: "Inter, sans-serif" }}>
+    <div style={{ minHeight: "100vh", background: "transparent", position: "relative", zIndex: 1, color: "var(--text-primary)", fontFamily: "Inter, sans-serif" }}>
       {/* Header */}
       <header style={{ 
         position: "sticky", top: 0, zIndex: 100,
