@@ -30,6 +30,13 @@ export interface PersonalityAnalysis {
     pride: number;
     fatigue: number;
   };
+  advancedMetrics?: {
+    narrativeContagion: { index: number; explanation: string };
+    cognitiveDissonance: { gap: number; explanation: string };
+    emotionalSynchrony: { score: number; regions: string[]; explanation: string };
+    amplifiers: string[];
+    hardAgendaCorrelation: string;
+  };
 }
 
 export interface ProvinceMetric {

@@ -156,7 +156,14 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
     "Recomendación accionable 1",
     "Recomendación accionable 2",
     "Recomendación accionable 3"
-  ]
+  ],
+  "advancedMetrics": {
+    "narrativeContagion": { "index": <0-100, velocidad de viralización>, "explanation": "Breve explicación de cómo contagia" },
+    "cognitiveDissonance": { "gap": <0-100, brecha entre relato y sentimiento callejero>, "explanation": "Qué percibe la gente por debajo del relato" },
+    "emotionalSynchrony": { "score": <0-100, homogeneidad federal>, "regions": ["NOA", "Centro", etc], "explanation": "Dónde resuena o dónde choca" },
+    "amplifiers": ["Nodo/Periodista/Troll 1", "Medio 2", "Sector 3"],
+    "hardAgendaCorrelation": "Breve análisis de cómo su imagen se ata a eventos económicos duros (dólar, inflación, desocupación)"
+  }
 }`;
 
   try {

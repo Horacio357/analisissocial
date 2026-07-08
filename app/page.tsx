@@ -12,7 +12,9 @@ import NarrativasEmergentes from "@/components/NarrativasEmergentes";
 import Top20Ranking from "@/components/Top20Ranking";
 import UserDashboard from "@/components/UserDashboard";
 import ProTools from "@/components/ProTools";
+import SaveSnapshot from "@/components/SaveSnapshot";
 import IntelligenceHub from "@/components/IntelligenceHub";
+import AdvancedIntelligenceLab from "@/components/AdvancedIntelligenceLab";
 import { TOP_20_PERSONALITIES } from "@/lib/top20";
 import { PersonalityAnalysis } from "@/lib/types";
 import { useAuth } from "@/components/AuthProvider";
@@ -32,14 +34,7 @@ export default function HomePage() {
     setCurrentAnalysis(data);
     setIsAnalyzing(false);
 
-    // Si hay usuario logueado, guardar el análisis en su historial
-    if (user) {
-      await supabase.from("saved_analyses").insert({
-        user_id: user.id,
-        personality_name: data.name,
-        analysis_data: data
-      });
-    }
+    // Quitamos el autoguardado porque ahora usaremos el botón explícito de Snapshot
 
     // Scroll a los resultados
     setTimeout(() => {
@@ -327,8 +322,16 @@ export default function HomePage() {
 
           {currentAnalysis && !isAnalyzing && (
             <div style={{ animation: "fadeInUp 0.5s ease both" }}>
-              <ProTools targetId="pdf-report-container" reportName={currentAnalysis.name} />
-              
+              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+                <div style={{ flex: 1 }}>
+                  <ProTools targetId="pdf-report-container" reportName={currentAnalysis.name} />
+                </div>
+                {user && (
+                  <div style={{ flexShrink: 0, marginTop: "1rem" }}>
+                    <SaveSnapshot analysis={currentAnalysis} userId={user.id} />
+                  </div>
+                )}
+              </div>              
               <div id="pdf-report-container" style={{ padding: "1rem", background: "var(--bg-base)", borderRadius: "var(--radius-lg)" }}>
                 <div style={{ textAlign: "center", marginBottom: "2rem" }}>
                 <div className="section-label" style={{ justifyContent: "center" }}>Análisis Completo</div>
@@ -397,6 +400,9 @@ export default function HomePage() {
 
                   {/* ─── CENTRO DE INTELIGENCIA ─── */}
                   <IntelligenceHub analysis={currentAnalysis} />
+
+                  {/* ─── LABORATORIO AVANZADO (PRO 2.0) ─── */}
+                  <AdvancedIntelligenceLab analysis={currentAnalysis} />
                 </div>
               </div>
               </div>
