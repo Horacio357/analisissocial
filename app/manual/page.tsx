@@ -3,6 +3,18 @@ import Link from "next/link";
 
 export default function ManualPage() {
   return (
+    <>
+    <style dangerouslySetInnerHTML={{__html: `
+      .manual-layout { display: flex; max-width: 1440px; margin: 0 auto; flex-direction: row; }
+      .manual-sidebar { width: 280px; border-right: 1px solid var(--glass-border); height: calc(100vh - 65px); position: sticky; top: 65px; padding: 2rem 1.5rem; overflow-y: auto; }
+      .manual-content { flex: 1; padding: 3rem 4rem; max-width: 900px; }
+      
+      @media (max-width: 768px) {
+        .manual-layout { flex-direction: column; }
+        .manual-sidebar { width: 100%; height: auto; position: relative; top: 0; border-right: none; border-bottom: 1px solid var(--glass-border); padding: 1.5rem; }
+        .manual-content { padding: 2rem 1.5rem; }
+      }
+    `}} />
     <div style={{ minHeight: "100vh", background: "transparent", position: "relative", zIndex: 1, color: "var(--text-primary)", fontFamily: "Inter, sans-serif" }}>
       {/* Header */}
       <header style={{ 
@@ -18,7 +30,7 @@ export default function ManualPage() {
           }}>
             <ChevronLeft size={16} /> Volver a Ojo Social
           </Link>
-          <div style={{ width: "1px", height: "20px", background: "var(--glass-border)" }} />
+          <div style={{ width: "1px", height: "20px", background: "var(--glass-border)", display: "none" }} className="hide-mobile" />
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Book size={18} color="var(--accent-primary)" />
             <span style={{ fontFamily: "Outfit", fontWeight: 700, fontSize: "1.1rem" }}>Manual Institucional</span>
@@ -27,14 +39,10 @@ export default function ManualPage() {
       </header>
 
       {/* Main Content Layout */}
-      <div style={{ display: "flex", maxWidth: "1440px", margin: "0 auto" }}>
+      <div className="manual-layout">
         
         {/* Sidebar Nav */}
-        <aside style={{ 
-          width: "280px", borderRight: "1px solid var(--glass-border)", 
-          height: "calc(100vh - 65px)", position: "sticky", top: "65px",
-          padding: "2rem 1.5rem", overflowY: "auto"
-        }}>
+        <aside className="manual-sidebar">
           <div style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.1em", color: "var(--text-muted)", fontWeight: 700, marginBottom: "1rem" }}>
             Índice
           </div>
@@ -48,7 +56,7 @@ export default function ManualPage() {
         </aside>
 
         {/* Content */}
-        <main style={{ flex: 1, padding: "3rem 4rem", maxWidth: "900px" }}>
+        <main className="manual-content">
           
           <div id="intro" style={{ marginBottom: "4rem" }}>
             <h1 style={{ fontFamily: "Outfit", fontSize: "2.5rem", fontWeight: 900, marginBottom: "1rem" }}>
