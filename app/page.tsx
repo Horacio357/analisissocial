@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Eye, Zap, Globe, Users, Star, GitCompare } from "lucide-react";
+import { Eye, Zap, Globe, Users, Star, GitCompare, X } from "lucide-react";
 import SearchBar from "@/components/SearchBar";
 import PersonalityCard from "@/components/PersonalityCard";
 import HeatMapArgentina from "@/components/HeatMapArgentina";
