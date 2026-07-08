@@ -162,7 +162,23 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
     "cognitiveDissonance": { "gap": <0-100, brecha entre relato y sentimiento callejero>, "explanation": "Qué percibe la gente por debajo del relato" },
     "emotionalSynchrony": { "score": <0-100, homogeneidad federal>, "regions": ["NOA", "Centro", etc], "explanation": "Dónde resuena o dónde choca" },
     "amplifiers": ["Nodo/Periodista/Troll 1", "Medio 2", "Sector 3"],
-    "hardAgendaCorrelation": "Breve análisis de cómo su imagen se ata a eventos económicos duros (dólar, inflación, desocupación)"
+    "hardAgendaCorrelation": "Breve análisis de cómo su imagen se ata a eventos económicos duros (dólar, inflación, desocupación)",
+    "network": {
+      "allies": [
+        { "name": "Aliado 1", "strength": <0-100>, "reason": "Por qué son aliados hoy" }
+      ],
+      "enemies": [
+        { "name": "Enemigo 1", "conflictLevel": <0-100>, "reason": "Motivo del conflicto actual" }
+      ]
+    },
+    "timeline": [
+      { "month": "Hace 5 meses", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> },
+      { "month": "Hace 4 meses", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> },
+      { "month": "Hace 3 meses", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> },
+      { "month": "Hace 2 meses", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> },
+      { "month": "Mes pasado", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> },
+      { "month": "Actual", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> }
+    ]
   }
 }`;
 

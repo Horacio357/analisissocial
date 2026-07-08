@@ -15,6 +15,8 @@ import ProTools from "@/components/ProTools";
 import SaveSnapshot from "@/components/SaveSnapshot";
 import IntelligenceHub from "@/components/IntelligenceHub";
 import AdvancedIntelligenceLab from "@/components/AdvancedIntelligenceLab";
+import PoliticalNetworkGraph from "@/components/PoliticalNetworkGraph";
+import PredictiveTimeline from "@/components/PredictiveTimeline";
 import { TOP_20_PERSONALITIES } from "@/lib/top20";
 import { PersonalityAnalysis } from "@/lib/types";
 import { useAuth } from "@/components/AuthProvider";
@@ -403,6 +405,12 @@ export default function HomePage() {
 
                   {/* ─── LABORATORIO AVANZADO (PRO 2.0) ─── */}
                   <AdvancedIntelligenceLab analysis={currentAnalysis} />
+
+                  {/* ─── MATRIZ DE ALIANZAS Y ENEMIGOS ─── */}
+                  <PoliticalNetworkGraph analysis={currentAnalysis} />
+
+                  {/* ─── LINEA DE TIEMPO PREDICTIVA ─── */}
+                  <PredictiveTimeline analysis={currentAnalysis} />
                 </div>
               </div>
               </div>

@@ -139,5 +139,6 @@ export default function ManualPage() {
         </main>
       </div>
     </div>
+    </>
   );
 }

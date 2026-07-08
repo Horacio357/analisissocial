@@ -36,6 +36,16 @@ export interface PersonalityAnalysis {
     emotionalSynchrony: { score: number; regions: string[]; explanation: string };
     amplifiers: string[];
     hardAgendaCorrelation: string;
+    network: {
+      allies: { name: string; strength: number; reason: string }[];
+      enemies: { name: string; conflictLevel: number; reason: string }[];
+    };
+    timeline: {
+      month: string;
+      approval: number;
+      polarization: number;
+      dissonance: number;
+    }[];
   };
 }
 
