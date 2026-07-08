@@ -12,9 +12,7 @@ const nextConfig: NextConfig = {
     NEWSDATA_API_KEY: process.env.NEWSDATA_API_KEY,
     NEWSDATA_API_URL: process.env.NEWSDATA_API_URL,
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+
   typescript: {
     ignoreBuildErrors: true,
   }

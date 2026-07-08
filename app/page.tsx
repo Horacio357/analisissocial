@@ -602,33 +602,37 @@ export default function HomePage() {
                 borderRadius: "8px", padding: "0.3rem", cursor: "pointer", color: "var(--text-muted)",
               }}
             >
-              X
+              <X size={16} />
             </button>
             <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
               <Star size={32} color="#f59e0b" style={{ margin: "0 auto 1rem" }} />
               <h2 style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 800, marginBottom: "0.5rem" }}>
-                ¡Ya tenés acceso <span className="text-gradient-warm">Premium</span>!
+                Desbloqueá el potencial <span className="text-gradient-warm">Premium</span>
               </h2>
               <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                Estás navegando en la versión PRO. Podés generar reportes ejecutivos en <b>PDF de alta resolución</b> o enviarlos por <b>Email</b> a tus clientes en un click.
+                Estás usando la versión gratuita. Pasate a Premium para obtener acceso total a la plataforma de inteligencia.
               </p>
             </div>
-            <div style={{ background: "rgba(0,212,255,0.05)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "8px", padding: "1rem", fontSize: "0.85rem", color: "var(--text-primary)" }}>
-              <p style={{ marginBottom: "0.5rem" }}><b>¿Cómo usarlas?</b></p>
-              <ol style={{ margin: 0, paddingLeft: "1.2rem", color: "var(--text-secondary)" }}>
-                <li style={{ marginBottom: "0.3rem" }}>Buscá o seleccioná a un político.</li>
-                <li>Hacé clic en los botones de "Descargar PDF" o "Enviar por Email" arriba de su perfil.</li>
-              </ol>
+            <div style={{ background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.2)", borderRadius: "8px", padding: "1rem", fontSize: "0.85rem", color: "var(--text-primary)" }}>
+              <p style={{ marginBottom: "0.5rem", color: "#fcd34d", fontWeight: 600 }}>Beneficios Exclusivos:</p>
+              <ul style={{ margin: 0, paddingLeft: "1.2rem", color: "var(--text-secondary)", display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <li><b>Búsquedas Ilimitadas:</b> Rompé el límite de 3 mediciones.</li>
+                <li><b>Laboratorio PRO 2.0:</b> Medí Disonancia Cognitiva y Contagio Narrativo.</li>
+                <li><b>Exportación de PDF:</b> Descargá reportes ejecutivos en alta resolución o envialos por Email.</li>
+              </ul>
             </div>
             <button
-              onClick={() => setShowProModal(false)}
+              onClick={() => {
+                setShowProModal(false);
+                window.location.href = "/login"; // Podría llevar a Stripe o Checkout, pero Login sirve por ahora para crear cuenta.
+              }}
               style={{
                 width: "100%", marginTop: "1.5rem", padding: "0.75rem",
-                background: "var(--accent-primary)", color: "#000", border: "none",
-                borderRadius: "8px", fontWeight: 700, cursor: "pointer",
+                background: "linear-gradient(90deg, #f59e0b 0%, #d97706 100%)", color: "#000", border: "none",
+                borderRadius: "8px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem"
               }}
             >
-              ¡Entendido!
+              <Star size={16} /> Adquirir Premium Ahora
             </button>
           </div>
         </div>
