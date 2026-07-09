@@ -435,13 +435,17 @@ export async function GET(request: NextRequest) {
       topNews,
       keywords: keywords.length > 0 ? keywords : [name.split(" ")[0].toLowerCase(), "política"],
       strategicRecommendations: [
-        "Aumentar la presencia territorial en zonas donde la favorabilidad es inferior a la media nacional.",
-        "Reforzar el discurso en medios digitales para conectar con audiencias sub-40.",
-        "Monitorear las narrativas de la oposición para anticipar posibles crisis reputacionales."
+        "Monitorear la evolución de la imagen en las próximas semanas.",
+        "Cruzar datos de medios con métricas de redes sociales."
       ],
-      trend: sentimentOverall > 0.1 ? "rising" : sentimentOverall < -0.1 ? "falling" : "stable",
+      trend: "stable" as const,
+      archetypeReasoning: "Arquetipo asignado algorítmicamente en base a las métricas superficiales de aprobación y polarización detectadas en la muestra de noticias.",
+      narratives: {
+        positive: ["Las menciones en tono neutral a positivo sugieren cierto margen de tolerancia social."],
+        negative: ["La polarización inherente a la figura genera fricción constante en el ecosistema mediático."]
+      },
       advancedMetrics: {
-        narrativeContagion: { index: 50, explanation: "Estimación heurística sin IA." },
+        narrativeContagion: { index: metrics.resonance, explanation: "Estimación heurística de viralidad." },
         cognitiveDissonance: { gap: 30, explanation: "Estimación heurística sin IA." },
         emotionalSynchrony: { score: 50, regions: ["Todo el país"], explanation: "Estimación." },
         amplifiers: ["Redes Sociales", "Medios Locales"],

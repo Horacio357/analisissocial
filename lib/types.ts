@@ -120,6 +120,11 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
     metrics: { approval: 42, polarization: 91, mobilization: 88, coherence: 38, resonance: 94, trust: 31 },
     emotions: { fear: 40, anger: 60, hope: 50, pride: 30, fatigue: 20 },
     sentimentOverall: -0.15,
+    archetypeReasoning: "Se presenta como el outsider que viene a romper el sistema, generando adhesión fervorosa y rechazo visceral en partes iguales.",
+    narratives: {
+      positive: ["El ordenamiento de las cuentas públicas demuestra un plan económico serio.", "Audacia para avanzar en reformas estructurales necesarias."],
+      negative: ["Las inconsistencias internas desgastan el relato de la austeridad.", "Inestabilidad en la gestión diaria por falta de consensos políticos."]
+    },
     provinceData: MOCK_PROVINCE_SENTIMENTS,
     topNews: [],
     keywords: ["libertad", "ajuste", "motosierra", "dolarización", "reforma"],
@@ -168,6 +173,11 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
     metrics: { approval: 97, polarization: 8, mobilization: 85, coherence: 95, resonance: 99, trust: 96 },
     emotions: { fear: 2, anger: 3, hope: 95, pride: 100, fatigue: 15 },
     sentimentOverall: 0.92,
+    archetypeReasoning: "Héroe indiscutido de la cultura popular contemporánea que unifica a todos los sectores sociodemográficos del país.",
+    narratives: {
+      positive: ["Símbolo de humildad, perseverancia y éxito argentino en el mundo.", "Unificador emocional por encima de la política tradicional."],
+      negative: ["Desconexión con la realidad económica diaria local.", "Presión desmedida sobre su figura como único faro de esperanza nacional."]
+    },
     provinceData: Object.fromEntries(
       Object.keys(MOCK_PROVINCE_SENTIMENTS).map(k => [k, { sentiment: 0.85 + Math.random() * 0.14, intensity: 0.6 + Math.random() * 0.35, dominantArchetype: "hero" as ArchetypeKey }])
     ),
@@ -214,6 +224,11 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
     metrics: { approval: 38, polarization: 89, mobilization: 82, coherence: 72, resonance: 88, trust: 28 },
     emotions: { fear: 45, anger: 55, hope: 40, pride: 35, fatigue: 75 },
     sentimentOverall: -0.32,
+    archetypeReasoning: "Figura maternal para sus aliados, pero el villano definitivo para sus detractores, generando niveles extremos de polarización.",
+    narratives: {
+      positive: ["Protección de los derechos laborales y sociales.", "Liderazgo firme ante los poderes concentrados."],
+      negative: ["Agotamiento del modelo económico intervencionista.", "Asociación persistente con causas de corrupción y opacidad judicial."]
+    },
     provinceData: MOCK_PROVINCE_SENTIMENTS,
     topNews: [],
     keywords: ["conurbano", "oposición", "documento", "PJ", "reaparición"],
