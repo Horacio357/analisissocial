@@ -129,6 +129,33 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
       "Instalar narrativa de 'estabilidad a largo plazo' para contrarrestar la métrica de Miedo actual."
     ],
     trend: "stable",
+    advancedMetrics: {
+      narrativeContagion: { index: 85, explanation: "Fuerte viralidad orgánica en TikTok y X." },
+      cognitiveDissonance: { gap: 65, explanation: "Brecha creciente entre relato macro y microeconomía." },
+      emotionalSynchrony: { score: 45, regions: ["CABA", "Córdoba", "Mendoza"], explanation: "Sintonía en el centro, fricción en el sur." },
+      amplifiers: ["Influencers digitales", "Medios aliados", "Cámaras empresariales"],
+      hardAgendaCorrelation: "Aprobación atada directamente a la inflación y el dólar.",
+      network: {
+        allies: [
+          { name: "P. Bullrich", strength: 80, reason: "Acuerdo de gestión y seguridad" },
+          { name: "M. Macri", strength: 60, reason: "Apoyo legislativo" },
+          { name: "Mercado", strength: 75, reason: "Alineación ideológica" }
+        ],
+        enemies: [
+          { name: "CGT", conflictLevel: 95, reason: "Reforma laboral y paritarias" },
+          { name: "Cristinismo", conflictLevel: 100, reason: "Antagonista principal" },
+          { name: "Univ. Públicas", conflictLevel: 70, reason: "Presupuesto educativo" }
+        ]
+      },
+      timeline: [
+        { month: "Mes -5", approval: 56, polarization: 75, dissonance: 40 },
+        { month: "Mes -4", approval: 54, polarization: 80, dissonance: 45 },
+        { month: "Mes -3", approval: 50, polarization: 82, dissonance: 50 },
+        { month: "Mes -2", approval: 48, polarization: 85, dissonance: 58 },
+        { month: "Mes -1", approval: 45, polarization: 88, dissonance: 60 },
+        { month: "Actual", approval: 42, polarization: 91, dissonance: 65 }
+      ]
+    }
   },
   {
     id: "lionel-messi",
@@ -152,6 +179,29 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
       "Maximizar activaciones de marketing en el interior del país, donde el sentimiento es unánime."
     ],
     trend: "stable",
+    advancedMetrics: {
+      narrativeContagion: { index: 99, explanation: "Viralización instantánea a nivel global." },
+      cognitiveDissonance: { gap: 5, explanation: "Total alineación entre su figura y la percepción popular." },
+      emotionalSynchrony: { score: 98, regions: ["Todo el país"], explanation: "Consenso absoluto." },
+      amplifiers: ["Prensa mundial", "Redes Sociales Globales", "Sponsors"],
+      hardAgendaCorrelation: "Desvinculado de la economía local. Su imagen depende de resultados deportivos.",
+      network: {
+        allies: [
+          { name: "AFA", strength: 95, reason: "Socio principal" },
+          { name: "Scaloni", strength: 100, reason: "Liderazgo compartido" },
+          { name: "Hinchada", strength: 100, reason: "Idolatría" }
+        ],
+        enemies: []
+      },
+      timeline: [
+        { month: "Mes -5", approval: 96, polarization: 5, dissonance: 5 },
+        { month: "Mes -4", approval: 97, polarization: 4, dissonance: 5 },
+        { month: "Mes -3", approval: 97, polarization: 5, dissonance: 6 },
+        { month: "Mes -2", approval: 98, polarization: 5, dissonance: 4 },
+        { month: "Mes -1", approval: 97, polarization: 6, dissonance: 5 },
+        { month: "Actual", approval: 97, polarization: 8, dissonance: 5 }
+      ]
+    }
   },
   {
     id: "cristina-kirchner",
@@ -173,5 +223,31 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
       "Construir voceros alternativos para llegar al centro del electorado sin fricción."
     ],
     trend: "rising",
+    advancedMetrics: {
+      narrativeContagion: { index: 75, explanation: "Alta resonancia en nicho duro, dificultad para romper burbuja." },
+      cognitiveDissonance: { gap: 40, explanation: "Coherencia en su base, gran rechazo afuera." },
+      emotionalSynchrony: { score: 35, regions: ["PBA", "Norte"], explanation: "Fuerte concentración de apoyo en AMBA." },
+      amplifiers: ["Militancia orgánica", "Intendentes PBA", "Medios afines"],
+      hardAgendaCorrelation: "Aprobación atada al poder adquisitivo histórico y subsidios.",
+      network: {
+        allies: [
+          { name: "La Cámpora", strength: 90, reason: "Estructura principal" },
+          { name: "Intendentes PBA", strength: 80, reason: "Apoyo territorial" }
+        ],
+        enemies: [
+          { name: "J. Milei", conflictLevel: 100, reason: "Antagonista ideológico" },
+          { name: "Justicia", conflictLevel: 95, reason: "Causas abiertas" },
+          { name: "P. Bullrich", conflictLevel: 85, reason: "Fricción histórica" }
+        ]
+      },
+      timeline: [
+        { month: "Mes -5", approval: 35, polarization: 85, dissonance: 45 },
+        { month: "Mes -4", approval: 34, polarization: 85, dissonance: 42 },
+        { month: "Mes -3", approval: 35, polarization: 88, dissonance: 40 },
+        { month: "Mes -2", approval: 36, polarization: 89, dissonance: 40 },
+        { month: "Mes -1", approval: 37, polarization: 88, dissonance: 38 },
+        { month: "Actual", approval: 38, polarization: 89, dissonance: 40 }
+      ]
+    }
   },
 ];
