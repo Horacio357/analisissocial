@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { MOCK_PERSONALITIES } from "@/lib/types";
 import { nameToId, ARCHETYPE_CONFIG } from "@/lib/utils";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { fetchArgentineRSS, RSSArticle } from "@/lib/rss";
 
 const NEWSDATA_API_KEY = process.env.NEWSDATA_API_KEY;
 const NEWSDATA_API_URL = process.env.NEWSDATA_API_URL || "https://newsdata.io/api/1/latest";
@@ -12,43 +13,55 @@ const analysisCache = new Map<string, { data: unknown; expiresAt: number }>();
 
 // ─── NewsData ──────────────────────────────────────────────────────────────────
 async function fetchPersonalityNews(name: string) {
-  if (!NEWSDATA_API_KEY) return [];
+  // 1. Iniciar búsquedas en paralelo (Híbrido)
+  const rssPromise = fetchArgentineRSS(name);
   
-  // Intento 1: Búsqueda exacta
-  const exactParams = new URLSearchParams({
-    apikey: NEWSDATA_API_KEY,
-    q: `"${name}"`,
-    language: "es",
-    country: "ar",
-    size: "10",
+  let newsdataPromise = Promise.resolve([]);
+  if (NEWSDATA_API_KEY) {
+    const exactParams = new URLSearchParams({ apikey: NEWSDATA_API_KEY, q: `"${name}"`, language: "es", country: "ar", size: "5" });
+    const flexParams = new URLSearchParams({ apikey: NEWSDATA_API_KEY, q: name, language: "es", country: "ar", size: "5" });
+    
+    newsdataPromise = fetch(`${NEWSDATA_API_URL}?${exactParams}`)
+      .then(res => res.ok ? res.json() : { results: [] })
+      .then(data => {
+        if (!data.results || data.results.length < 3) {
+          return fetch(`${NEWSDATA_API_URL}?${flexParams}`).then(r => r.ok ? r.json() : { results: [] });
+        }
+        return data;
+      })
+      .then(data => data.results || [])
+      .catch(() => []);
+  }
+
+  // Esperar ambos motores
+  const [rssArticles, newsdataArticles] = await Promise.all([rssPromise, newsdataPromise]);
+
+  // Estandarizar formato NewsData
+  const formattedNewsData = newsdataArticles.map((item: any) => ({
+    title: item.title,
+    source_name: item.source_id || "NewsData",
+    link: item.link,
+    pubDate: item.pubDate,
+    description: item.description || ""
+  }));
+
+  // Combinar
+  const combined = [...rssArticles, ...formattedNewsData];
+
+  // Remover duplicados (por título similar o link exacto)
+  const uniqueMap = new Map<string, RSSArticle>();
+  combined.forEach(item => {
+    // Clave simple para evitar la misma nota
+    const key = item.title.slice(0, 30).toLowerCase();
+    if (!uniqueMap.has(key) && !uniqueMap.has(item.link)) {
+      uniqueMap.set(key, item as RSSArticle);
+      uniqueMap.set(item.link, item as RSSArticle); // registrar link
+    }
   });
 
-  try {
-    let res = await fetch(`${NEWSDATA_API_URL}?${exactParams}`);
-    let data = res.ok ? await res.json() : { results: [] };
-    
-    // Intento 2: Si la búsqueda exacta falla o trae muy poco, usar búsqueda flexible
-    if (!data.results || data.results.length < 3) {
-      const flexibleParams = new URLSearchParams({
-        apikey: NEWSDATA_API_KEY,
-        q: name, // Sin comillas estrictas
-        language: "es",
-        country: "ar",
-        size: "10",
-      });
-      res = await fetch(`${NEWSDATA_API_URL}?${flexibleParams}`);
-      const flexData = res.ok ? await res.json() : { results: [] };
-      
-      // Combinar y remover duplicados por ID de artículo o link
-      const combined = [...(data.results || []), ...(flexData.results || [])];
-      const unique = Array.from(new Map(combined.map(item => [item.link, item])).values());
-      data.results = unique.slice(0, 10);
-    }
-
-    return data.results || [];
-  } catch {
-    return [];
-  }
+  // Nos quedamos con los 10 mejores y únicos
+  const uniqueArticles = Array.from(new Set(Array.from(uniqueMap.values())));
+  return uniqueArticles.slice(0, 10);
 }
 
 // ─── Heurística de fallback (sin Gemini) ─────────────────────────────────────
