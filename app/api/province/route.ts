@@ -1,10 +1,37 @@
-﻿import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GROQ_API_KEY = process.env.GROQ_API_KEY;
 
 const provinceCache = new Map<string, { data: unknown; expiresAt: number }>();
+
+const ARGENTINE_GOVERNORS: Record<string, string> = {
+  "buenos-aires-ciudad": "Jorge Macri (Jefe de Gobierno)",
+  "buenos-aires": "Axel Kicillof",
+  "catamarca": "Raúl Jalil",
+  "chaco": "Leandro Zdero",
+  "chubut": "Ignacio Torres",
+  "cordoba": "Martín Llaryora",
+  "corrientes": "Gustavo Valdés",
+  "entre-rios": "Rogelio Frigerio",
+  "formosa": "Gildo Insfrán",
+  "jujuy": "Carlos Sadir",
+  "la-pampa": "Sergio Ziliotto",
+  "la-rioja": "Ricardo Quintela",
+  "mendoza": "Alfredo Cornejo",
+  "misiones": "Hugo Passalacqua",
+  "neuquen": "Rolando Figueroa",
+  "rio-negro": "Alberto Weretilneck",
+  "salta": "Gustavo Sáenz",
+  "san-juan": "Marcelo Orrego",
+  "san-luis": "Claudio Poggi",
+  "santa-cruz": "Claudio Vidal",
+  "santa-fe": "Maximiliano Pullaro",
+  "santiago-del-estero": "Gerardo Zamora",
+  "tierra-del-fuego": "Gustavo Melella",
+  "tucuman": "Osvaldo Jaldo",
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,7 +48,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ ...cached.data, fromCache: true });
     }
 
+    const governor = ARGENTINE_GOVERNORS[provinceId] || "desconocido";
+
     const prompt = `Sos el analista de inteligencia territorial más profundo de Argentina. Tu tarea es explicar con precisión quirúrgica cómo percibe la provincia de ${provinceName} el tema "${topic}" ${category ? "(categoría: " + category + ")" : ""}.
+
+CONTEXTO TERRITORIAL DE ${provinceName}:
+- Gobernador actual: ${governor} (es obligatorio referenciar la gestión de ${governor} y cómo influye en la opinión pública local sobre este tema).
 
 CONTEXTO NACIONAL:
 - Tema analizado: "${topic}"
@@ -29,8 +61,8 @@ CONTEXTO NACIONAL:
 - Resumen nacional: "${(nationalSummary || "Sin datos").slice(0, 300)}"
 
 REGLAS ABSOLUTAS:
-1. Explicá con hechos concretos y reales por qué ${provinceName} percibe "${topic}" de una manera específica.
-2. Mencioná el gobernador actual de ${provinceName}, la situación económica regional, eventos locales recientes.
+1. Explicá con hechos concretos y reales por qué ${provinceName} percibe "${topic}" de una manera específica, citando políticas locales de ${governor}.
+2. Mencioná y analizá el impacto de la gestión de ${governor} y la situación económica de la provincia.
 3. Comparar con el promedio nacional — ¿Está por encima o por debajo y por qué?
 4. PROHIBIDO: Frases genéricas que sirvan para cualquier provincia. Todo debe ser específico de ${provinceName}.
 5. El summary debe tener MÍNIMO 4 oraciones densas en información territorial real.
