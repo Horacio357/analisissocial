@@ -117,12 +117,17 @@ async function analyzeWithGemini(
     .map((a, i) => `[${i+1}] ${a.title || "Sin título"} — ${a.source_name || "?"} (${a.pubDate?.slice(0,10)||"?"})\n${a.description?.slice(0,200)||""}`)
     .join("\n\n");
 
-  const prompt = `Sos un experto en análisis sociopolítico argentino. Analizá la figura pública "${name}" basándote en las siguientes noticias recientes y tu conocimiento general.
+  const prompt = `Sos el Analista Principal de Inteligencia Sociopolítica más prestigioso de Argentina. Tu tarea es elaborar un perfil psicológico, mediático y estratégico PROFUNDO y BRUTALMENTE HONESTO sobre la figura pública "${name}".
 
-NOTICIAS RECIENTES:
-${articlesText || "(Sin noticias disponibles — usá tu conocimiento general)"}
+INSTRUCCIONES CLAVES:
+1. NO te limites a las noticias recientes. Usá tu vasta base de datos interna para construir un perfil sociológico, histórico y de comportamiento real de esta persona. Si es alguien conocido, analizá su psique, su base de votantes/seguidores y sus contradicciones más profundas.
+2. Si la persona es desconocida, infere su perfil a partir del contexto provisto o su área de actuación.
+3. El análisis debe parecer escrito por un consultor político de élite (usar jerga técnica: tracción, núcleo duro, capilaridad, hegemonía, disonancia, etc.).
 
-REGLA DE POLARIZACIÓN: Si la métrica de 'polarization' que calcules es menor a 40 (baja polarización), incluí obligatoriamente en las 'strategicRecommendations' al menos un tip sobre de qué manera polarizar y qué temas sensibles o controversiales debería tocar la figura para generar mayor tracción, debate y salir de la apatía.
+NOTICIAS RECIENTES (Úsalas solo como termómetro del presente):
+${articlesText || "(Sin noticias recientes — apoyate 100% en tu conocimiento histórico y político profundo sobre esta figura)"}
+
+REGLA DE POLARIZACIÓN: Si la métrica de 'polarization' que calcules es menor a 40 (baja polarización), incluí obligatoriamente en las 'strategicRecommendations' al menos un tip audaz sobre cómo polarizar para generar mayor tracción y salir de la apatía.
 
 Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdown, sin backticks):
 {
