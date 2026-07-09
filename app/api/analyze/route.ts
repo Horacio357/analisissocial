@@ -344,6 +344,7 @@ export async function GET(request: NextRequest) {
       strategicRecommendations: geminiResult.strategicRecommendations || [],
       trend: geminiResult.trend,
       narratives: geminiResult.narratives,
+      advancedMetrics: geminiResult.advancedMetrics,
       aiPowered: true,
     };
   } else {
@@ -405,6 +406,25 @@ export async function GET(request: NextRequest) {
         "Monitorear las narrativas de la oposición para anticipar posibles crisis reputacionales."
       ],
       trend: sentimentOverall > 0.1 ? "rising" : sentimentOverall < -0.1 ? "falling" : "stable",
+      advancedMetrics: {
+        narrativeContagion: { index: 50, explanation: "Estimación heurística sin IA." },
+        cognitiveDissonance: { gap: 30, explanation: "Estimación heurística sin IA." },
+        emotionalSynchrony: { score: 50, regions: ["Todo el país"], explanation: "Estimación." },
+        amplifiers: ["Redes Sociales", "Medios Locales"],
+        hardAgendaCorrelation: "Estimación heurística por falta de IA.",
+        network: {
+          allies: [{ name: "Desconocido", strength: 50, reason: "Análisis heurístico" }],
+          enemies: [{ name: "Oposición", conflictLevel: 50, reason: "Análisis heurístico" }]
+        },
+        timeline: [
+          { month: "Mes -5", approval: metrics.approval, polarization: metrics.polarization, dissonance: 30 },
+          { month: "Mes -4", approval: metrics.approval, polarization: metrics.polarization, dissonance: 30 },
+          { month: "Mes -3", approval: metrics.approval, polarization: metrics.polarization, dissonance: 30 },
+          { month: "Mes -2", approval: metrics.approval, polarization: metrics.polarization, dissonance: 30 },
+          { month: "Mes -1", approval: metrics.approval, polarization: metrics.polarization, dissonance: 30 },
+          { month: "Actual", approval: metrics.approval, polarization: metrics.polarization, dissonance: 30 }
+        ]
+      },
       aiPowered: false,
     };
   }
