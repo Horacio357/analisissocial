@@ -7,6 +7,7 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const compareCache = new Map<string, { data: any; expiresAt: number }>();
 
 export async function POST(request: NextRequest) {
+  let prompt = "";
   try {
     const body = await request.json();
     const { candidateA, candidateB } = body;
@@ -35,10 +36,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(fallbackData);
     }
 
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-
-    const prompt = `Sos un experto consultor en marketing político y comunicación de crisis en Argentina.
+    prompt = `Sos un experto consultor en marketing político y comunicación de crisis en Argentina.
 Analizá el cruce competitivo entre dos figuras públicas. Tu cliente es la campaña de "${candidateA.name}".
 
 Datos del Cliente (${candidateA.name}):
@@ -61,6 +59,8 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
   ]
 }`;
 
+    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
     const result = await model.generateContent(prompt);
     const text = result.response.text().trim();
     const clean = text.replace(/^```json?\n?/, "").replace(/\n?```$/, "").trim();
