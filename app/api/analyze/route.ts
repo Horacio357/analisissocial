@@ -158,78 +158,116 @@ async function analyzeWithGemini(
   const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
   const articlesText = articles
-    .slice(0, 5)
-    .map((a, i) => `[${i+1}] ${a.title || "Sin título"} — ${a.source_name || "?"}\n${a.description?.slice(0,150)||""}`)
+    .filter(a => a.source_name !== "Wikipedia")
+    .slice(0, 8)
+    .map((a, i) => `[${i+1}] ${a.title || "Sin título"} — ${a.source_name || "?"}
+${a.description?.slice(0,200)||""}`)
     .join("\n\n");
 
-  const prompt = `Sos el Analista Principal de Inteligencia Sociopolítica más prestigioso de Argentina. Tu tarea es elaborar un perfil psicológico y estratégico de "${name}".
+  const wikiText = articles.find(a => a.source_name === "Wikipedia");
 
-INSTRUCCIONES CLAVES:
-1. IGNORÁ noticias repetidas o ruido irrelevante. Enfocate solo en las señales de fondo.
-2. Usá tu base de datos interna para construir el perfil psicológico y de poder de esta persona.
-3. Sé sintético y contundente, estilo consultoría de élite.
+  // Auto-detect category from name & articles
+  const allText = `${name} ${articlesText}`.toLowerCase();
+  const isInfluencer = /streamer|youtuber|influencer|twitch|streaming|gamer|content|tiktok|instagram|seguidor|suscriptor|coscu|mazza|olga|luquitas|martita|fort|gastón|papu/.test(allText);
+  const isSport = /futbol|tenis|basquet|deporte|atleta|nba|liga|cancha|gol|partido|jugador|entrenador|dt/.test(allText);
+  const isArtist = /cantante|actor|actriz|músico|banda|album|película|teatro|arte|cultura/.test(allText);
+  const category = isInfluencer ? "influencer/streamer digital" : isSport ? "figura del deporte" : isArtist ? "figura del entretenimiento y la cultura" : "figura política";
+  
+  const sectorInstructions = isInfluencer ? `
+CONTEXTO DE SECTOR (Influencer/Streamer):
+- Esta es una figura digital. Sus métricas clave son: alcance real en YouTube/Twitch/TikTok, engagement auténtico, capacidad de conversión publicitaria, y relevancia en la cultura pop juvenil argentina.
+- "Aprobación" = nivel de fanatismo y lealtad de su comunidad. "Polarización" = cuántos lo odian vs. lo aman fuera de su base. "Mobilización" = capacidad de mover a su audiencia a hacer algo concreto (comprar, votar, asistir). "Confianza" = credibilidad como prescriptor de marca o causa.
+- Las narrativas deben hablar de su contenido, sus polémicas en redes, su estilo, sus colaboraciones y rivalidades. Ignorar completamente el marco político.
+- Las Recomendaciones Estratégicas deben estar orientadas a: marcas que quieran contratarlo, productoras que quieran asociarse, o el propio influencer para crecer.
+` : isSport ? `
+CONTEXTO DE SECTOR (Deporte):
+- Esta es una figura deportiva. Sus métricas clave son: rendimiento actual vs. histórico, impacto en la selección o club, imagen pública fuera del campo y valor de marca.
+- Enfocate en el estado de forma actual, su impacto en la camiseta argentina si aplica, y sus contratos/acuerdos comerciales.
+- Las Recomendaciones Estratégicas deben estar orientadas a marcas, federaciones o el propio atleta.
+` : isArtist ? `
+CONTEXTO DE SECTOR (Entretenimiento):
+- Esta es una figura del mundo del espectáculo. Sus métricas clave son: popularidad en medios, escándalos, relevancia cultural y capacidad de generar audiencias.
+- Hablar de su trayectoria, proyectos actuales, rating de sus trabajos y su imagen en las redes.
+` : `
+CONTEXTO DE SECTOR (Política):
+- Esta es una figura política. Analizá su posicionamiento ideológico, su capital electoral, sus alianzas y enemigos dentro del sistema de poder, y cómo impactan en él los eventos económicos duros (dólar, inflación, desempleo).
+`;
 
-NOTICIAS RECIENTES (Úsalas solo como termómetro del presente mediático):
-${articlesText || "(Sin noticias recientes — apoyate 100% en tu conocimiento histórico y político profundo sobre esta figura)"}
+  const prompt = `Sos el analista de inteligencia pública más brutal y honesto de Argentina. No sos un bot genérico. Tu trabajo es decir la VERDAD sin filtros, con el estilo de un consultor de élite que cobra honorarios de 6 cifras. Analizá a "${name}", una ${category}.
 
-COMENTARIOS ORGÁNICOS (YouTube - Voz de la Calle):
+${sectorInstructions}
+
+REGLA DE ORO: PROHIBIDO dar respuestas genéricas, tibias o vagas. Cada oración del análisis debe contener información específica y verificable sobre "${name}". Si decís algo, citá el hecho concreto que lo respalda.
+
+REGLA DE PROFUNDIDAD: El campo "summary" debe tener MÍNIMO 5 oraciones sólidas y densas en información real. No des un resumen de 2 líneas. Es el corazón del análisis y la primera impresión.
+
+REGLA DE HONESTIDAD BRUTAL: Si la figura tiene puntos débiles gravísimos, decílos con nombre y apellido. Si tiene fortalezas reales, reconocelas sin adulación. El cliente paga por la verdad, no por halagos.
+
+REGLA DE DISONANCIA: Compará el relato mediático con la percepción real de la gente. Si hay una brecha enorme entre lo que dice la prensa y lo que siente la audiencia, reflejalo agresivamente en 'cognitiveDissonance'.
+
+REGLA DE POLARIZACIÓN: Si la métrica de 'polarization' es menor a 40, incluí en las 'strategicRecommendations' cómo activar esa apatía.
+
+FUENTES DE DATOS DISPONIBLES:
+${wikiText ? `📖 PERFIL ENCICLOPÉDICO: "${wikiText.description}"` : ""}
+
+📰 NOTICIAS Y CONTEXTO RECIENTE:
+${articlesText || "(Sin noticias recientes — apoyate 100% en tu conocimiento profundo sobre esta figura)"}
+
+💬 COMENTARIOS ORGÁNICOS DE YOUTUBE (Voz auténtica de la audiencia):
 ${youtubeComments.length > 0 ? youtubeComments.map((c, i) => `[${i+1}] "${c.text}" (👍 ${c.likes} likes)`).join("\n") : "(Sin comentarios recientes)"}
-
-REGLA DE DISONANCIA: Compará el tono de las noticias (periodismo) con el tono de los comentarios orgánicos (gente real). Si la noticia habla de un 'éxito' pero los comentarios muestran furia, aumentá radicalmente la 'cognitiveDissonance' (brecha relato vs realidad) en el apartado advancedMetrics.
-
-REGLA DE POLARIZACIÓN: Si la métrica de 'polarization' que calcules es menor a 40 (baja polarización), incluí obligatoriamente en las 'strategicRecommendations' al menos un tip audaz sobre cómo polarizar para generar mayor tracción y salir de la apatía.
 
 Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdown, sin backticks):
 {
-  "summary": "Resumen narrativo de 2-3 oraciones que capture la esencia actual de la figura en la opinión pública argentina. Sé específico, cita hechos reales.",
+  "summary": "MÍNIMO 5 oraciones. Perfil psicológico y de poder agresivo. Específico, con hechos reales. Sin frases genéricas.",
   "archetype": "uno de: hero | villain | sage | trickster | guardian",
-  "archetypeScore": <número 0-100 indicando confianza en el arquetipo>,
-  "archetypeReasoning": "Explicación de 1-2 oraciones del por qué este arquetipo. Qué narrativa colectiva lo sostiene.",
+  "archetypeScore": <número 0-100 indicando confianza>,
+  "archetypeReasoning": "2-3 oraciones específicas sobre por qué este arquetipo. Qué narrativa colectiva lo sostiene y qué hecho concreto lo demuestra.",
+  "category": "${category}",
   "metrics": {
-    "approval": <0-100, aprobación general en la narrativa mediática>,
-    "polarization": <0-100, cuánto divide a la sociedad>,
-    "mobilization": <0-100, capacidad de movilizar/generar acción>,
-    "coherence": <0-100, consistencia percibida entre discurso y actos>,
-    "resonance": <0-100, impacto real en la conversación pública>,
-    "trust": <0-100, credibilidad percibida>
+    "approval": <0-100>,
+    "polarization": <0-100>,
+    "mobilization": <0-100>,
+    "coherence": <0-100>,
+    "resonance": <0-100>,
+    "trust": <0-100>
   },
   "emotions": {
-    "fear": <0-100, nivel de miedo/incertidumbre/inseguridad generado>,
-    "anger": <0-100, nivel de descontento/bronca social>,
-    "hope": <0-100, nivel de esperanza/felicidad/alivio>,
-    "pride": <0-100, nivel de orgullo nacional o sectorial>,
-    "fatigue": <0-100, nivel de fatiga social o burnout sobre la figura/tema>
+    "fear": <0-100>,
+    "anger": <0-100>,
+    "hope": <0-100>,
+    "pride": <0-100>,
+    "fatigue": <0-100>
   },
-  "sentimentOverall": <número entre -1.0 y 1.0, siendo -1 muy negativo y 1 muy positivo>,
+  "sentimentOverall": <número entre -1.0 y 1.0>,
   "keywords": ["palabra1", "palabra2", "palabra3", "palabra4", "palabra5"],
   "trend": "rising | falling | stable",
   "narratives": {
-    "positive": ["narrativa favorable 1", "narrativa favorable 2"],
-    "negative": ["narrativa crítica 1", "narrativa crítica 2"]
+    "positive": ["narrativa favorable específica 1 con hecho concreto", "narrativa favorable específica 2"],
+    "negative": ["narrativa crítica específica 1 con hecho concreto", "narrativa crítica específica 2"]
   },
   "strategicRecommendations": [
-    "Recomendación accionable 1",
-    "Recomendación accionable 2",
-    "Recomendación accionable 3"
+    "Recomendación accionable 1 — específica y audaz, adaptada al sector",
+    "Recomendación accionable 2 — que un consultor real daría, no genérica",
+    "Recomendación accionable 3 — basada en los puntos débiles del oponente o del mercado"
   ],
   "advancedMetrics": {
-    "narrativeContagion": { "index": <0-100, velocidad de viralización>, "explanation": "Breve explicación de cómo contagia" },
-    "cognitiveDissonance": { "gap": <0-100, brecha entre relato y sentimiento callejero>, "explanation": "Qué percibe la gente por debajo del relato" },
-    "emotionalSynchrony": { "score": <0-100, homogeneidad federal>, "regions": ["NOA", "Centro", etc], "explanation": "Dónde resuena o dónde choca" },
-    "amplifiers": ["Nodo/Periodista/Troll 1", "Medio 2", "Sector 3"],
-    "hardAgendaCorrelation": "Breve análisis de cómo su imagen se ata a eventos económicos duros (dólar, inflación, desocupación)",
+    "narrativeContagion": { "index": <0-100>, "explanation": "Explicación específica de cómo contagia su mensaje" },
+    "cognitiveDissonance": { "gap": <0-100>, "explanation": "Qué percibe la gente vs. qué dice el relato oficial" },
+    "emotionalSynchrony": { "score": <0-100>, "regions": ["NOA", "Centro"], "explanation": "Dónde resuena y dónde no" },
+    "amplifiers": ["Nombre real de canal/periodista/nodo 1", "Nombre real 2", "Nombre real 3"],
+    "hardAgendaCorrelation": "Cómo su imagen se mueve cuando hay eventos de impacto duro",
     "network": {
       "allies": [
-        { "name": "Aliado 1 (Nombre Real)", "strength": <0-100>, "reason": "Por qué son aliados hoy" },
-        { "name": "Aliado 2", "strength": <0-100>, "reason": "..." },
-        { "name": "Aliado 3", "strength": <0-100>, "reason": "..." },
-        { "name": "Aliado 4 (mínimo 4)", "strength": <0-100>, "reason": "..." }
+        { "name": "Nombre Real de Aliado 1", "strength": <0-100>, "reason": "Por qué son aliados hoy" },
+        { "name": "Nombre Real de Aliado 2", "strength": <0-100>, "reason": "..." },
+        { "name": "Nombre Real de Aliado 3", "strength": <0-100>, "reason": "..." },
+        { "name": "Nombre Real de Aliado 4", "strength": <0-100>, "reason": "..." }
       ],
       "enemies": [
-        { "name": "Enemigo 1 (Nombre Real)", "conflictLevel": <0-100>, "reason": "Motivo del conflicto actual" },
-        { "name": "Enemigo 2", "conflictLevel": <0-100>, "reason": "..." },
-        { "name": "Enemigo 3", "conflictLevel": <0-100>, "reason": "..." },
-        { "name": "Enemigo 4 (mínimo 4)", "conflictLevel": <0-100>, "reason": "..." }
+        { "name": "Nombre Real de Adversario 1", "conflictLevel": <0-100>, "reason": "Motivo específico del conflicto" },
+        { "name": "Nombre Real de Adversario 2", "conflictLevel": <0-100>, "reason": "..." },
+        { "name": "Nombre Real de Adversario 3", "conflictLevel": <0-100>, "reason": "..." },
+        { "name": "Nombre Real de Adversario 4", "conflictLevel": <0-100>, "reason": "..." }
       ]
     },
     "timeline": [
