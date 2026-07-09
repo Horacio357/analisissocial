@@ -451,8 +451,14 @@ export async function GET(request: NextRequest) {
         amplifiers: ["Redes Sociales", "Medios Locales"],
         hardAgendaCorrelation: "Estimación heurística por falta de IA.",
         network: {
-          allies: [{ name: "Desconocido", strength: 50, reason: "Análisis heurístico" }],
-          enemies: [{ name: "Oposición", conflictLevel: 50, reason: "Análisis heurístico" }]
+          allies: [
+            { name: "Aliado 1", score: 85, reason: "Afinidad política", type: "ally" },
+            { name: "Aliado 2", score: 70, reason: "Apoyo discursivo", type: "ally" }
+          ],
+          enemies: [
+            { name: "Adversario 1", score: 90, reason: "Polarización directa", type: "enemy" },
+            { name: "Adversario 2", score: 75, reason: "Competencia electoral", type: "enemy" }
+          ]
         },
         timeline: [
           { month: "Mes -5", approval: metrics.approval, polarization: metrics.polarization, dissonance: 30 },
