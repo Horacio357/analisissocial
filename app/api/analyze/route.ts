@@ -128,16 +128,16 @@ async function analyzeWithGemini(
   const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
 
   const articlesText = articles
-    .slice(0, 8)
-    .map((a, i) => `[${i+1}] ${a.title || "Sin título"} — ${a.source_name || "?"} (${a.pubDate?.slice(0,10)||"?"})\n${a.description?.slice(0,200)||""}`)
+    .slice(0, 5)
+    .map((a, i) => `[${i+1}] ${a.title || "Sin título"} — ${a.source_name || "?"}\n${a.description?.slice(0,150)||""}`)
     .join("\n\n");
 
-  const prompt = `Sos el Analista Principal de Inteligencia Sociopolítica más prestigioso de Argentina. Tu tarea es elaborar un perfil psicológico, mediático y estratégico PROFUNDO y BRUTALMENTE HONESTO sobre la figura pública "${name}".
+  const prompt = `Sos el Analista Principal de Inteligencia Sociopolítica más prestigioso de Argentina. Tu tarea es elaborar un perfil psicológico y estratégico de "${name}".
 
 INSTRUCCIONES CLAVES:
-1. NO te limites a las noticias recientes. Usá tu vasta base de datos interna para construir un perfil sociológico, histórico y de comportamiento real de esta persona. Si es alguien conocido, analizá su psique, su base de votantes/seguidores y sus contradicciones más profundas.
-2. Si la persona es desconocida, infere su perfil a partir del contexto provisto o su área de actuación.
-3. El análisis debe parecer escrito por un consultor político de élite (usar jerga técnica: tracción, núcleo duro, capilaridad, hegemonía, disonancia, etc.).
+1. IGNORÁ noticias repetidas o ruido irrelevante. Enfocate solo en las señales de fondo.
+2. Usá tu base de datos interna para construir el perfil psicológico y de poder de esta persona.
+3. Sé sintético y contundente, estilo consultoría de élite.
 
 NOTICIAS RECIENTES (Úsalas solo como termómetro del presente mediático):
 ${articlesText || "(Sin noticias recientes — apoyate 100% en tu conocimiento histórico y político profundo sobre esta figura)"}

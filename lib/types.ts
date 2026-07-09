@@ -143,13 +143,19 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
       network: {
         allies: [
           { name: "P. Bullrich", strength: 80, reason: "Acuerdo de gestión y seguridad" },
-          { name: "M. Macri", strength: 60, reason: "Apoyo legislativo" },
-          { name: "Mercado", strength: 75, reason: "Alineación ideológica" }
+          { name: "L. Caputo", strength: 95, reason: "Ejecución del plan económico central" },
+          { name: "S. Sturzenegger", strength: 90, reason: "Arquitecto de desregulación" },
+          { name: "Sector Financiero", strength: 85, reason: "Apoyo a la baja del riesgo país" },
+          { name: "Votantes sub-30", strength: 75, reason: "Núcleo duro original" },
+          { name: "M. Macri", strength: 60, reason: "Alianza táctica legislativa inestable" }
         ],
         enemies: [
-          { name: "CGT", conflictLevel: 95, reason: "Reforma laboral y paritarias" },
-          { name: "Cristinismo", conflictLevel: 100, reason: "Antagonista principal" },
-          { name: "Univ. Públicas", conflictLevel: 70, reason: "Presupuesto educativo" }
+          { name: "Kirchnerismo", conflictLevel: 100, reason: "Antagonista ideológico absoluto" },
+          { name: "Sindicatos", conflictLevel: 95, reason: "Choque por reforma laboral" },
+          { name: "Movimientos Sociales", conflictLevel: 90, reason: "Corte de financiamiento" },
+          { name: "M. Lousteau", conflictLevel: 85, reason: "Oposición radical interna" },
+          { name: "Gobernadores PJ", conflictLevel: 75, reason: "Disputa por coparticipación" },
+          { name: "Universidades", conflictLevel: 80, reason: "Conflicto presupuestario" }
         ]
       },
       timeline: [
@@ -197,11 +203,17 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
       hardAgendaCorrelation: "Desvinculado de la economía local. Su imagen depende de resultados deportivos.",
       network: {
         allies: [
-          { name: "AFA", strength: 95, reason: "Socio principal" },
-          { name: "Scaloni", strength: 100, reason: "Liderazgo compartido" },
-          { name: "Hinchada", strength: 100, reason: "Idolatría" }
+          { name: "AFA", strength: 95, reason: "Socio institucional principal" },
+          { name: "L. Scaloni", strength: 100, reason: "Liderazgo compartido perfecto" },
+          { name: "A. Di María", strength: 100, reason: "Socio histórico en el campo" },
+          { name: "Hinchada Argentina", strength: 100, reason: "Idolatría absoluta y unánime" },
+          { name: "Inter Miami", strength: 90, reason: "Proyecto deportivo actual" },
+          { name: "Sponsors Globales", strength: 95, reason: "Alineación comercial total" }
         ],
-        enemies: []
+        enemies: [
+          { name: "Prensa amarillista (pasado)", conflictLevel: 10, reason: "Críticas antiguas disueltas" },
+          { name: "Lesiones", conflictLevel: 85, reason: "Único obstáculo real activo" }
+        ]
       },
       timeline: [
         { month: "Mes -5", approval: 96, polarization: 5, dissonance: 5 },
@@ -246,13 +258,20 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
       hardAgendaCorrelation: "Aprobación atada al poder adquisitivo histórico y subsidios.",
       network: {
         allies: [
-          { name: "La Cámpora", strength: 90, reason: "Estructura principal" },
-          { name: "Intendentes PBA", strength: 80, reason: "Apoyo territorial" }
+          { name: "La Cámpora", strength: 95, reason: "Estructura militante principal" },
+          { name: "A. Kicillof", strength: 85, reason: "Principal gobernador aliado" },
+          { name: "Intendentes PBA", strength: 80, reason: "Base territorial conurbano" },
+          { name: "Sindicatos Afines", strength: 75, reason: "Resistencia al gobierno actual" },
+          { name: "Madres/Abuelas", strength: 90, reason: "Lazo histórico de DDHH" },
+          { name: "S. Massa", strength: 65, reason: "Alianza pragmática inestable" }
         ],
         enemies: [
-          { name: "J. Milei", conflictLevel: 100, reason: "Antagonista ideológico" },
-          { name: "Justicia", conflictLevel: 95, reason: "Causas abiertas" },
-          { name: "P. Bullrich", conflictLevel: 85, reason: "Fricción histórica" }
+          { name: "J. Milei", conflictLevel: 100, reason: "Antagonista ideológico directo" },
+          { name: "Poder Judicial", conflictLevel: 95, reason: "Causas abiertas y condenas" },
+          { name: "M. Macri", conflictLevel: 90, reason: "Enemigo histórico del PRO" },
+          { name: "P. Bullrich", conflictLevel: 85, reason: "Fricción en seguridad y relato" },
+          { name: "Medios Hegemónicos", conflictLevel: 95, reason: "Guerra mediática crónica" },
+          { name: "PJ No Kirchnerista", conflictLevel: 70, reason: "Disputa por liderazgo peronista" }
         ]
       },
       timeline: [
