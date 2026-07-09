@@ -5,12 +5,16 @@ import { createPortal } from "react-dom";
 import { ARGENTINA_PROVINCES } from "@/lib/argentina-map-data";
 import { PersonalityAnalysis, ProvinceMetric } from "@/lib/types";
 import { ARCHETYPE_CONFIG, sentimentToColor } from "@/lib/utils";
+import ProvinceDetailPanel from "@/components/ProvinceDetailPanel";
 
 interface HeatMapArgentinaProps {
   provinceData?: Record<string, ProvinceMetric>;
   personalityName?: string;
   archetype?: string;
   mode?: "sentiment" | "intensity";
+  topic?: string;
+  nationalSummary?: string;
+  category?: string;
 }
 
 interface HoveredProvince {
@@ -48,9 +52,10 @@ function hexToRgba(hex: string, alpha: number) {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 }
 
-export default function HeatMapArgentina({ provinceData, personalityName, archetype = "hero", mode = "sentiment" }: HeatMapArgentinaProps) {
+export default function HeatMapArgentina({ provinceData, personalityName, archetype = "hero", mode = "sentiment", topic, nationalSummary, category }: HeatMapArgentinaProps) {
   const [hovered, setHovered] = useState<HoveredProvince | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [selectedProvince, setSelectedProvince] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -83,7 +88,7 @@ export default function HeatMapArgentina({ provinceData, personalityName, archet
           {personalityName ? `Percepción de ${personalityName}` : "Humor Social · Argentina"}
         </h3>
         <p style={{ fontSize: "0.78rem", color: "var(--text-muted)", marginTop: "0.2rem" }}>
-          Pasa el cursor sobre una provincia para ver el detalle
+          Pasa el cursor sobre una provincia · <span style={{ color: "var(--accent-primary)" }}>Click para análisis detallado IA</span>
         </p>
       </div>
 
@@ -150,6 +155,11 @@ export default function HeatMapArgentina({ provinceData, personalityName, archet
                     }
                   }}
                   onMouseLeave={() => setHovered(null)}
+                  onClick={() => {
+                    if (topic || personalityName) {
+                      setSelectedProvince({ id: province.id, name: province.name });
+                    }
+                  }}
                 />
                 {/* Labels de TODAS las provincias */}
                 {(() => {
@@ -326,6 +336,18 @@ export default function HeatMapArgentina({ provinceData, personalityName, archet
           </span>
         </div>
       )}
+
+      {/* Panel de detalle provincial */}
+      <ProvinceDetailPanel
+        isOpen={!!selectedProvince}
+        onClose={() => setSelectedProvince(null)}
+        provinceName={selectedProvince?.name || ""}
+        provinceId={selectedProvince?.id || ""}
+        topic={topic || personalityName || ""}
+        nationalSentiment={nationalAvg}
+        nationalSummary={nationalSummary || ""}
+        category={category}
+      />
     </div>
   );
 }

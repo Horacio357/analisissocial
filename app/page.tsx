@@ -18,6 +18,8 @@ import IntelligenceHub from "@/components/IntelligenceHub";
 import AdvancedIntelligenceLab from "@/components/AdvancedIntelligenceLab";
 import PoliticalNetworkGraph from "@/components/PoliticalNetworkGraph";
 import PredictiveTimeline from "@/components/PredictiveTimeline";
+import TopicSelector from "@/components/TopicSelector";
+import LoadingAnalysis from "@/components/LoadingAnalysis";
 import { TOP_20_PERSONALITIES } from "@/lib/top20";
 import { PersonalityAnalysis } from "@/lib/types";
 import { useAuth } from "@/components/AuthProvider";
@@ -31,6 +33,7 @@ export default function HomePage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
+  const [activeTopic, setActiveTopic] = useState<string | null>(null);
   const { user } = useAuth();
   const supabase = createClient();
 
@@ -200,8 +203,39 @@ export default function HomePage() {
 
             {/* Search Bar */}
             <div style={{ animation: "fadeInUp 0.6s ease 0.3s both" }}>
-              <SearchBar onResult={handleResult} onLoading={setIsAnalyzing} />
+              <SearchBar onResult={(data) => { handleResult(data); setActiveTopic(null); }} onLoading={setIsAnalyzing} />
             </div>
+
+            {/* Topic Selector */}
+            <div style={{ animation: "fadeInUp 0.6s ease 0.4s both", maxWidth: "700px", margin: "0 auto", width: "100%" }}>
+              <TopicSelector
+                activeTopic={activeTopic || undefined}
+                onSelect={(topic) => {
+                  setActiveTopic(topic);
+                  setIsAnalyzing(true);
+                  fetch(`/api/analyze?name=${encodeURIComponent(topic)}`)
+                    .then(r => r.ok ? r.json() : null)
+                    .then(data => { if (data) handleResult(data); setIsAnalyzing(false); })
+                    .catch(() => setIsAnalyzing(false));
+                }}
+              />
+            </div>
+
+            {/* Loading overlay */}
+            {isAnalyzing && (
+              <div style={{
+                maxWidth: "700px", margin: "0 auto", width: "100%",
+                background: "var(--glass-bg)",
+                border: "1px solid var(--glass-border)",
+                borderRadius: "var(--radius-lg)",
+                backdropFilter: "blur(12px)",
+              }}>
+                <LoadingAnalysis
+                  name={activeTopic || "la figura"}
+                  isTopic={!!activeTopic}
+                />
+              </div>
+            )}
           </div>
 
           {/* ─── DASHBOARD GRID ─────────────────────────────────────────── */}
@@ -223,6 +257,10 @@ export default function HomePage() {
               <HeatMapArgentina
                 provinceData={currentAnalysis?.provinceData || MOCK_PROVINCE_SENTIMENTS}
                 personalityName={currentAnalysis?.name}
+                archetype={currentAnalysis?.archetype}
+                topic={activeTopic || currentAnalysis?.name}
+                nationalSummary={currentAnalysis?.summary}
+                category={(currentAnalysis as any)?.category}
               />
             </div>
 
@@ -440,7 +478,7 @@ export default function HomePage() {
 
                   <div style={{ marginTop: "1rem", flexGrow: 1, display: "flex", flexDirection: "column" }}>
                     {activeTab === "radar" && <PoliticalNetworkGraph analysis={currentAnalysis} />}
-                    {activeTab === "map" && <HeatMapArgentina provinceData={currentAnalysis.provinceData} personalityName={currentAnalysis.name} archetype={currentAnalysis.archetype} />}
+                    {activeTab === "map" && <HeatMapArgentina provinceData={currentAnalysis.provinceData} personalityName={currentAnalysis.name} archetype={currentAnalysis.archetype} topic={activeTopic || currentAnalysis.name} nationalSummary={currentAnalysis.summary} category={(currentAnalysis as any).category} />}
                     {activeTab === "lab" && <AdvancedIntelligenceLab analysis={currentAnalysis} />}
                     {activeTab === "timeline" && <PredictiveTimeline analysis={currentAnalysis} />}
                   </div>

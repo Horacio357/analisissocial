@@ -67,9 +67,10 @@ export async function fetchYouTubeComments(query: string): Promise<YouTubeCommen
       }
     }
 
-    // 3. Ordenar todos los comentarios extraídos por cantidad de likes y quedarnos con los 30 mejores
-    allComments.sort((a, b) => b.likes - a.likes);
-    return allComments.slice(0, 30);
+    // 3. Ordenar todos los comentarios extraídos por cantidad de likes y quedarnos con los 10 mejores
+    return allComments
+      .sort((a, b) => b.likes - a.likes)
+      .slice(0, 10);
 
   } catch (error) {
     console.error("Error en YouTube API:", error);

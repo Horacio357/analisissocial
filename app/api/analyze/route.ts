@@ -168,7 +168,29 @@ ${a.description?.slice(0,200)||""}`)
 
   // Auto-detect category from name & articles
   const allText = `${name} ${articlesText}`.toLowerCase();
-  const isInfluencer = /streamer|youtuber|influencer|twitch|streaming|gamer|content|tiktok|instagram|seguidor|suscriptor|coscu|mazza|olga|luquitas|martita|fort|gastón|papu/.test(allText);
+  
+  // ─── Detección de Temas Nacionales ──────────────────────────────────────────
+  const KNOWN_TOPICS: Record<string, { emoji: string; description: string; archetype: string }> = {
+    "seguridad": { emoji: "🔒", description: "percepción de inseguridad, delito y fuerzas de seguridad en Argentina", archetype: "villain" },
+    "salud": { emoji: "🏥", description: "acceso al sistema de salud, calidad hospitalaria, medicamentos y cobertura médica en Argentina", archetype: "guardian" },
+    "nutrición": { emoji: "🥗", description: "hambre, asistencia alimentaria, comedores comunitarios y calidad nutricional en Argentina", archetype: "villain" },
+    "educación": { emoji: "📚", description: "calidad educativa, paros docentes, infraestructura escolar y acceso educativo en Argentina", archetype: "guardian" },
+    "economía": { emoji: "💰", description: "inflación, salarios, empleo, dólar y poder adquisitivo en Argentina", archetype: "villain" },
+    "medio ambiente": { emoji: "🌍", description: "contaminación, cambio climático, minería y recursos naturales en Argentina", archetype: "guardian" },
+    "energía": { emoji: "⚡", description: "cortes de luz, tarifas eléctricas, subsidios y crisis energética en Argentina", archetype: "villain" },
+    "vivienda": { emoji: "🏘️", description: "acceso a la tierra, alquileres, déficit habitacional y planes de vivienda en Argentina", archetype: "villain" },
+    "empleo": { emoji: "💼", description: "desempleo, trabajo informal, precariedad laboral y oportunidades en Argentina", archetype: "villain" },
+    "corrupción": { emoji: "⚖️", description: "corrupción gubernamental, transparencia institucional y confianza en el Estado en Argentina", archetype: "villain" },
+    "narcotráfico": { emoji: "🚨", description: "narcotráfico, crimen organizado y narcocriminalidad en Argentina", archetype: "villain" },
+    "pobreza": { emoji: "📉", description: "niveles de pobreza, indigencia, asistencia social y desigualdad en Argentina", archetype: "villain" },
+    "inflación": { emoji: "📈", description: "inflación, aumento de precios, impacto en el consumo y poder adquisitivo en Argentina", archetype: "villain" },
+    "drogas": { emoji: "💊", description: "consumo de sustancias, problemática de adicciones y políticas de salud mental en Argentina", archetype: "villain" },
+  };
+  
+  const topicKey = Object.keys(KNOWN_TOPICS).find(k => name.toLowerCase().includes(k));
+  const knownTopic = topicKey ? KNOWN_TOPICS[topicKey] : null;
+  
+  const isInfluencer = !knownTopic && /streamer|youtuber|influencer|twitch|streaming|gamer|content|tiktok|instagram|seguidor|suscriptor|coscu|mazza|olga|luquitas|martita|fort|gastón|papu/.test(allText);
   const isSport = /futbol|tenis|basquet|deporte|atleta|nba|liga|cancha|gol|partido|jugador|entrenador|dt/.test(allText);
   const isArtist = /cantante|actor|actriz|músico|banda|album|película|teatro|arte|cultura/.test(allText);
   const category = isInfluencer ? "influencer/streamer digital" : isSport ? "figura del deporte" : isArtist ? "figura del entretenimiento y la cultura" : "figura política";
@@ -192,6 +214,99 @@ CONTEXTO DE SECTOR (Entretenimiento):
 CONTEXTO DE SECTOR (Política):
 - Esta es una figura política. Analizá su posicionamiento ideológico, su capital electoral, sus alianzas y enemigos dentro del sistema de poder, y cómo impactan en él los eventos económicos duros (dólar, inflación, desempleo).
 `;
+
+  // ─── Prompt de Tema Nacional (si aplica) ─────────────────────────────────────
+  if (knownTopic) {
+    const topicPrompt = `Sos el analista de percepción social más riguroso y honesto de Argentina. Tu misión es hacer un diagnóstico REAL de cómo perciben los argentinos el tema "${name}" en el año 2025-2026.
+
+DESCRIPCIÓN DEL TEMA: ${knownTopic.description}
+
+REGLA ABSOLUTA: Este análisis NO es sobre una persona. Es sobre cómo siente y percibe el ciudadano argentino promedio este tema en su vida cotidiana. Usá datos, encuestas, hechos y noticias reales.
+
+REGLA DE PROFUNDIDAD: El campo "summary" debe tener MÍNIMO 5 oraciones densas. Mencioná estadísticas, porcentajes reales, provincias más afectadas, y cómo cambió la percepción en el último año.
+
+REGLA DE HONESTIDAD: Decí la verdad dura. Si el 60% de los argentinos no se sienten seguros, decílo. Si la situación mejoró, reconocelo con datos.
+
+FUENTES DISPONIBLES:
+${articlesText || "(Sin noticias recientes — apoyate en tu conocimiento actualizado sobre el tema)"}
+
+Respondé ÚNICAMENTE con un JSON válido (sin markdown, sin backticks):
+{
+  "summary": "MÍNIMO 5 oraciones. Diagnóstico real de cómo perciben los argentinos '${name}'. Con estadísticas, provincias afectadas, evolución reciente y causas concretas.",
+  "archetype": "${knownTopic.archetype}",
+  "archetypeScore": <0-100 nivel de confianza>,
+  "archetypeReasoning": "Por qué este tema tiene este arquetipo en la percepción colectiva argentina. 2-3 oraciones con datos.",
+  "category": "tema nacional",
+  "metrics": {
+    "approval": <0-100, qué tan bien percibe la ciudadanía la situación de este tema>,
+    "polarization": <0-100, cuánto divide políticamente a la sociedad>,
+    "mobilization": <0-100, qué tanta acción ciudadana genera>,
+    "coherence": <0-100, qué tan coherente es el relato oficial con la realidad vivida>,
+    "resonance": <0-100, qué tan presente está en la agenda mediática y social>,
+    "trust": <0-100, qué tanta confianza tienen los ciudadanos en las instituciones para resolver este tema>
+  },
+  "emotions": {
+    "fear": <0-100>,
+    "anger": <0-100>,
+    "hope": <0-100>,
+    "pride": <0-100>,
+    "fatigue": <0-100>
+  },
+  "sentimentOverall": <número entre -1.0 y 1.0, -1 = crisis total, 1 = muy bien resuelto>,
+  "keywords": ["palabra1", "palabra2", "palabra3", "palabra4", "palabra5"],
+  "trend": "rising | falling | stable",
+  "narratives": {
+    "positive": ["Aspecto positivo o mejora real con dato concreto 1", "Aspecto positivo 2"],
+    "negative": ["Aspecto negativo o crítica real con dato concreto 1", "Aspecto negativo 2"]
+  },
+  "strategicRecommendations": [
+    "Recomendación de política pública o acción ciudadana concreta 1",
+    "Recomendación 2 — qué debería cambiar o hacerse para mejorar esta percepción",
+    "Recomendación 3"
+  ],
+  "advancedMetrics": {
+    "narrativeContagion": { "index": <0-100>, "explanation": "Cómo se viraliza la angustia/esperanza sobre este tema" },
+    "cognitiveDissonance": { "gap": <0-100>, "explanation": "Brecha entre lo que dice el gobierno y lo que vive el ciudadano" },
+    "emotionalSynchrony": { "score": <0-100>, "regions": ["NOA", "Patagonia"], "explanation": "Dónde se siente más y dónde menos" },
+    "amplifiers": ["Medio/sector que amplifica el debate 1", "Amplificador 2", "Amplificador 3"],
+    "hardAgendaCorrelation": "Cómo este tema se mueve con eventos económicos o políticos duros",
+    "network": {
+      "allies": [
+        { "name": "Institución/Organización aliada en resolver este tema 1", "strength": <0-100>, "reason": "Por qué impulsan la solución" },
+        { "name": "Aliado 2", "strength": <0-100>, "reason": "..." },
+        { "name": "Aliado 3", "strength": <0-100>, "reason": "..." },
+        { "name": "Aliado 4", "strength": <0-100>, "reason": "..." }
+      ],
+      "enemies": [
+        { "name": "Obstáculo/actor que agrava el problema 1", "conflictLevel": <0-100>, "reason": "Por qué agrava la situación" },
+        { "name": "Obstáculo 2", "conflictLevel": <0-100>, "reason": "..." },
+        { "name": "Obstáculo 3", "conflictLevel": <0-100>, "reason": "..." },
+        { "name": "Obstáculo 4", "conflictLevel": <0-100>, "reason": "..." }
+      ]
+    },
+    "timeline": [
+      { "month": "Hace 5 meses", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> },
+      { "month": "Hace 4 meses", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> },
+      { "month": "Hace 3 meses", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> },
+      { "month": "Hace 2 meses", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> },
+      { "month": "Mes pasado", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> },
+      { "month": "Actual", "approval": <0-100>, "polarization": <0-100>, "dissonance": <0-100> }
+    ]
+  }
+}`;
+    const prompt = topicPrompt;
+    try {
+      const result = await model.generateContent(prompt);
+      const text = result.response.text().trim();
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No JSON found in Gemini topic response");
+      const parsed = JSON.parse(jsonMatch[0]);
+      return { ...parsed, aiPowered: true };
+    } catch (topicErr) {
+      console.error("Gemini topic error:", topicErr);
+      return null;
+    }
+  }
 
   const prompt = `Sos el analista de inteligencia pública más brutal y honesto de Argentina. No sos un bot genérico. Tu trabajo es decir la VERDAD sin filtros, con el estilo de un consultor de élite que cobra honorarios de 6 cifras. Analizá a "${name}", una ${category}.
 
