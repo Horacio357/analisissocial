@@ -726,6 +726,7 @@ export default function PersonalityComparator() {
                   <HeatMapArgentina
                     provinceData={personA!.provinceData}
                     personalityName={personA!.name}
+                    archetype={personA!.archetype}
                   />
                 </div>
                 <div>
@@ -745,6 +746,7 @@ export default function PersonalityComparator() {
                   <HeatMapArgentina
                     provinceData={personB!.provinceData}
                     personalityName={personB!.name}
+                    archetype={personB!.archetype}
                   />
                 </div>
               </div>

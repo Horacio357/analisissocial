@@ -375,7 +375,7 @@ export async function GET(request: NextRequest) {
       aiPowered: true,
     };
   } else {
-    // ── Fallback heurístico ──
+    // ── Fallback heurístico inteligente ──
     const topNews = articles.slice(0,5).map((a: { title?: string; source_name?: string; link?: string; pubDate?: string }) => ({
       title: a.title || "Sin título",
       source: a.source_name || "Desconocido",
@@ -384,9 +384,10 @@ export async function GET(request: NextRequest) {
       sentiment: heuristicSentiment(a.title || ""),
     }));
 
-    const metrics = heuristicMetrics(articles);
-    const archetype = heuristicArchetype(metrics);
-    const sentimentOverall = (metrics.approval - 50) / 50;
+    const mock = MOCK_PERSONALITIES.find(p => p.id === id || p.name.toLowerCase() === name.toLowerCase());
+    const metrics = mock ? mock.metrics : heuristicMetrics(articles);
+    const archetype = mock ? mock.archetype : heuristicArchetype(metrics);
+    const sentimentOverall = mock ? mock.sentimentOverall : (metrics.approval - 50) / 50;
 
     const provinceData = Object.fromEntries(
       Object.keys(MOCK_PROVINCE_SENTIMENTS).map(k => [
