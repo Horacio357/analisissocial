@@ -207,7 +207,7 @@ export default function HomePage() {
             </div>
 
             {/* Topic Selector */}
-            <div style={{ animation: "fadeInUp 0.6s ease 0.4s both", maxWidth: "700px", margin: "0 auto", width: "100%" }}>
+            <div style={{ animation: "fadeInUp 0.6s ease 0.4s both", maxWidth: "700px", margin: "1.25rem auto 0", width: "100%" }}>
               <TopicSelector
                 activeTopic={activeTopic || undefined}
                 onSelect={(topic) => {

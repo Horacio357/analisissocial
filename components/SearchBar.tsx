@@ -208,7 +208,7 @@ export default function SearchBar({ onResult, onLoading }: SearchBarProps) {
 
       {/* Tags de acceso rápido */}
       {!query && (
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.75rem", justifyContent: "center" }}>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginTop: "0.75rem", marginBottom: "0.75rem", justifyContent: "center" }}>
           {["Messi", "Milei", "Cristina Kirchner", "Macri", "Susana Giménez"].map(name => {
             // Determinar color del arquetipo
             const archetypeColors: Record<string, string> = {
