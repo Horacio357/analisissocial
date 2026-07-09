@@ -8,6 +8,7 @@ const compareCache = new Map<string, { data: any; expiresAt: number }>();
 
 export async function POST(request: NextRequest) {
   let prompt = "";
+  let cacheKey = "";
   try {
     const body = await request.json();
     const { candidateA, candidateB } = body;
@@ -16,7 +17,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Se requieren los datos de ambos candidatos" }, { status: 400 });
     }
 
-    const cacheKey = `${candidateA.id || candidateA.name}_vs_${candidateB.id || candidateB.name}`;
+    cacheKey = `${candidateA.id || candidateA.name}_vs_${candidateB.id || candidateB.name}`;
     const cached = compareCache.get(cacheKey);
     if (cached && Date.now() < cached.expiresAt) {
       return NextResponse.json({ ...cached.data, fromCache: true });
@@ -95,10 +96,13 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
 
       const groqData = await groqRes.json();
       const text = groqData.choices[0].message.content.trim();
-      const clean = text.replace(/^```json?\n?/i, "").replace(/\n?```$/i, "").trim();
-      const parsed = JSON.parse(clean);
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No JSON found in Groq response");
+      const parsed = JSON.parse(jsonMatch[0]);
 
-      compareCache.set(cacheKey, { data: parsed, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 });
+      if (cacheKey) {
+        compareCache.set(cacheKey, { data: parsed, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 });
+      }
       return NextResponse.json({ ...parsed, fromCache: false, fromFallback: true });
 
     } catch (groqErr) {

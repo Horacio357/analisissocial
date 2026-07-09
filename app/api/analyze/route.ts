@@ -17,6 +17,10 @@ async function fetchPersonalityNews(name: string) {
   // 1. Iniciar búsquedas en paralelo (Híbrido)
   const rssPromise = fetchArgentineRSS(name);
   
+  const wikiPromise = fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`)
+    .then(res => res.ok ? res.json() : null)
+    .catch(() => null);
+  
   let newsdataPromise = Promise.resolve([]);
   if (NEWSDATA_API_KEY) {
     const exactParams = new URLSearchParams({ apikey: NEWSDATA_API_KEY, q: `"${name}"`, language: "es", country: "ar", size: "5" });
@@ -34,8 +38,8 @@ async function fetchPersonalityNews(name: string) {
       .catch(() => []);
   }
 
-  // Esperar ambos motores
-  const [rssArticles, newsdataArticles] = await Promise.all([rssPromise, newsdataPromise]);
+  // Esperar todos los motores
+  const [rssArticles, newsdataArticles, wikiData] = await Promise.all([rssPromise, newsdataPromise, wikiPromise]);
 
   // Estandarizar formato NewsData
   const formattedNewsData = newsdataArticles.map((item: any) => ({
@@ -48,6 +52,16 @@ async function fetchPersonalityNews(name: string) {
 
   // Combinar
   const combined = [...rssArticles, ...formattedNewsData];
+  
+  if (wikiData && wikiData.extract) {
+    combined.push({
+      title: `Perfil enciclopédico de ${wikiData.title}`,
+      source_name: "Wikipedia",
+      link: wikiData.content_urls?.desktop?.page || "",
+      pubDate: new Date().toISOString(),
+      description: wikiData.extract
+    });
+  }
 
   // Remover duplicados (por título similar o link exacto)
   const uniqueMap = new Map<string, RSSArticle>();
@@ -216,9 +230,9 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
   try {
     const result = await model.generateContent(prompt);
     const text = result.response.text().trim();
-    // Limpiar posibles backticks de markdown que Gemini a veces agrega
-    const clean = text.replace(/^```json?\n?/,"").replace(/\n?```$/,"").trim();
-    const parsed = JSON.parse(clean);
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("No JSON found in Gemini response");
+    const parsed = JSON.parse(jsonMatch[0]);
     return { ...parsed, aiPowered: true };
   } catch (err) {
     console.error("Gemini error, attempting Groq fallback:", err);
@@ -245,8 +259,9 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
 
       const groqData = await groqRes.json();
       const text = groqData.choices[0].message.content.trim();
-      const clean = text.replace(/^```json?\n?/i,"").replace(/\n?```$/i,"").trim();
-      const parsed = JSON.parse(clean);
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No JSON found in Groq response");
+      const parsed = JSON.parse(jsonMatch[0]);
       return { ...parsed, aiPowered: true, fromFallback: true };
     } catch (groqErr) {
       console.error("Groq fallback error:", groqErr);
@@ -437,9 +452,9 @@ export async function GET(request: NextRequest) {
       category: "politica" as const,
       archetype,
       archetypeScore: Math.round(60 + Math.random()*25),
-      summary: articles.length > 0
+      summary: articles.find((a: any) => a.source_name === "Wikipedia")?.description?.slice(0, 300) + "..." || (articles.length > 0
         ? `Análisis basado en ${articles.length} artículos recientes. ${ARCHETYPE_CONFIG[archetype].description}`
-        : `No se encontraron noticias recientes sobre ${name}. Mostrando análisis estimado.`,
+        : `No se encontraron noticias recientes sobre ${name}. Mostrando análisis estimado basado en comportamiento sociológico simulado.`),
       analyzedAt: new Date().toISOString(),
       metrics,
       emotions: {
