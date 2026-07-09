@@ -3,6 +3,7 @@ import { MOCK_PERSONALITIES } from "@/lib/types";
 import { nameToId, ARCHETYPE_CONFIG } from "@/lib/utils";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { fetchArgentineRSS, RSSArticle } from "@/lib/rss";
+import { fetchYouTubeComments } from "@/lib/youtube";
 
 const NEWSDATA_API_KEY = process.env.NEWSDATA_API_KEY;
 const NEWSDATA_API_URL = process.env.NEWSDATA_API_URL || "https://newsdata.io/api/1/latest";
@@ -118,7 +119,8 @@ interface GeminiAnalysisResult {
 
 async function analyzeWithGemini(
   name: string,
-  articles: Array<{ title?: string; description?: string; source_name?: string; pubDate?: string; link?: string }>
+  articles: Array<{ title?: string; description?: string; source_name?: string; pubDate?: string; link?: string }>,
+  youtubeComments: Array<{ author: string; text: string; likes: number }> = []
 ): Promise<GeminiAnalysisResult | null> {
   if (!GEMINI_API_KEY) return null;
 
@@ -137,8 +139,13 @@ INSTRUCCIONES CLAVES:
 2. Si la persona es desconocida, infere su perfil a partir del contexto provisto o su área de actuación.
 3. El análisis debe parecer escrito por un consultor político de élite (usar jerga técnica: tracción, núcleo duro, capilaridad, hegemonía, disonancia, etc.).
 
-NOTICIAS RECIENTES (Úsalas solo como termómetro del presente):
+NOTICIAS RECIENTES (Úsalas solo como termómetro del presente mediático):
 ${articlesText || "(Sin noticias recientes — apoyate 100% en tu conocimiento histórico y político profundo sobre esta figura)"}
+
+COMENTARIOS ORGÁNICOS (YouTube - Voz de la Calle):
+${youtubeComments.length > 0 ? youtubeComments.map((c, i) => `[${i+1}] "${c.text}" (👍 ${c.likes} likes)`).join("\n") : "(Sin comentarios recientes)"}
+
+REGLA DE DISONANCIA: Compará el tono de las noticias (periodismo) con el tono de los comentarios orgánicos (gente real). Si la noticia habla de un 'éxito' pero los comentarios muestran furia, aumentá radicalmente la 'cognitiveDissonance' (brecha relato vs realidad) en el apartado advancedMetrics.
 
 REGLA DE POLARIZACIÓN: Si la métrica de 'polarization' que calcules es menor a 40 (baja polarización), incluí obligatoriamente en las 'strategicRecommendations' al menos un tip audaz sobre cómo polarizar para generar mayor tracción y salir de la apatía.
 
@@ -313,11 +320,14 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // 3. Noticias reales
-  const articles = await fetchPersonalityNews(name);
+  // 3. Noticias reales y Comentarios de YouTube (Motor Triple)
+  const [articles, youtubeComments] = await Promise.all([
+    fetchPersonalityNews(name),
+    fetchYouTubeComments(name)
+  ]);
 
   // 4. Análisis con Gemini (si hay API key) o heurístico
-  const geminiResult = await analyzeWithGemini(name, articles);
+  const geminiResult = await analyzeWithGemini(name, articles, youtubeComments);
 
   const { MOCK_PROVINCE_SENTIMENTS } = await import("@/lib/types");
 
