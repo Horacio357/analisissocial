@@ -22,8 +22,16 @@ async function fetchPersonalityNews(name: string) {
     .then(searchData => {
       if (searchData && searchData[1] && searchData[1].length > 0) {
         const realTitle = searchData[1][0];
-        return fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(realTitle)}`)
-          .then(res => res.ok ? res.json() : null);
+        const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        const normName = normalize(name);
+        const normTitle = normalize(realTitle);
+        const nameParts = normName.split(" ").filter(w => w.length > 2);
+        const isPlausible = nameParts.length > 0 ? nameParts.every(part => normTitle.includes(part)) : normTitle.includes(normName);
+        
+        if (isPlausible) {
+          return fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(realTitle)}`)
+            .then(res => res.ok ? res.json() : null);
+        }
       }
       return null;
     })
