@@ -17,8 +17,16 @@ async function fetchPersonalityNews(name: string) {
   // 1. Iniciar búsquedas en paralelo (Híbrido)
   const rssPromise = fetchArgentineRSS(name);
   
-  const wikiPromise = fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`)
+  const wikiPromise = fetch(`https://es.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(name)}&limit=1&format=json`)
     .then(res => res.ok ? res.json() : null)
+    .then(searchData => {
+      if (searchData && searchData[1] && searchData[1].length > 0) {
+        const realTitle = searchData[1][0];
+        return fetch(`https://es.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(realTitle)}`)
+          .then(res => res.ok ? res.json() : null);
+      }
+      return null;
+    })
     .catch(() => null);
   
   let newsdataPromise = Promise.resolve([]);
@@ -247,7 +255,7 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "llama3-70b-8192",
+          model: "llama-3.3-70b-versatile",
           messages: [{ role: "user", content: prompt }],
           temperature: 0.3
         })
@@ -446,15 +454,20 @@ export async function GET(request: NextRequest) {
     const freq = words.reduce((acc: Record<string,number>, w: string) => { acc[w] = (acc[w]||0)+1; return acc; }, {} as Record<string, number>);
     const keywords = Object.entries(freq).sort((a,b) => (b[1] as number)-(a[1] as number)).slice(0,8).map(([k]) => k);
 
+    const wikiDesc = articles.find((a: any) => a.source_name === "Wikipedia")?.description;
+    const finalSummary = wikiDesc 
+      ? wikiDesc.slice(0, 300) + "..."
+      : (articles.length > 0
+        ? `Análisis basado en ${articles.length} artículos recientes. ${ARCHETYPE_CONFIG[archetype].description}`
+        : `No se encontraron noticias recientes sobre ${name}. Mostrando análisis estimado basado en comportamiento sociológico simulado.`);
+
     analysis = {
       id,
       name,
       category: "politica" as const,
       archetype,
       archetypeScore: Math.round(60 + Math.random()*25),
-      summary: articles.find((a: any) => a.source_name === "Wikipedia")?.description?.slice(0, 300) + "..." || (articles.length > 0
-        ? `Análisis basado en ${articles.length} artículos recientes. ${ARCHETYPE_CONFIG[archetype].description}`
-        : `No se encontraron noticias recientes sobre ${name}. Mostrando análisis estimado basado en comportamiento sociológico simulado.`),
+      summary: finalSummary,
       analyzedAt: new Date().toISOString(),
       metrics,
       emotions: {

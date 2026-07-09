@@ -84,7 +84,7 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          model: "llama3-70b-8192",
+          model: "llama-3.3-70b-versatile",
           messages: [{ role: "user", content: prompt }],
           temperature: 0.3
         })
