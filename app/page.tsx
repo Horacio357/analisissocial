@@ -27,6 +27,7 @@ import { ARCHETYPE_CONFIG } from "@/lib/utils";
 
 export default function HomePage() {
   const [currentAnalysis, setCurrentAnalysis] = useState<PersonalityAnalysis | null>(null);
+  const [activeTab, setActiveTab] = useState<"radar" | "lab" | "timeline">("radar");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [navOpen, setNavOpen] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
@@ -347,7 +348,7 @@ export default function HomePage() {
 
               <div style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+                gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 400px), 1fr))",
                 gap: "1.5rem",
                 maxWidth: "1300px",
                 margin: "0 auto",
@@ -411,11 +412,40 @@ export default function HomePage() {
                   <IntelligenceHub analysis={currentAnalysis} />
                 </div>
 
-                {/* Columna Derecha: Laboratorio Avanzado, Radar y Timeline */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-                  <PoliticalNetworkGraph analysis={currentAnalysis} />
-                  <AdvancedIntelligenceLab analysis={currentAnalysis} />
-                  <PredictiveTimeline analysis={currentAnalysis} />
+                {/* Columna Derecha: Laboratorio Avanzado, Radar y Timeline con Pestañas */}
+                <div className="glass-card" style={{ display: "flex", flexDirection: "column", gap: "1rem", padding: "1.5rem" }}>
+                  <div style={{ display: "flex", gap: "0.5rem", borderBottom: "1px solid var(--glass-border)", paddingBottom: "1rem", overflowX: "auto", scrollbarWidth: "none" }}>
+                    {[
+                      { id: "radar", label: "Radar de Alianzas" },
+                      { id: "lab", label: "Laboratorio IA" },
+                      { id: "timeline", label: "Proyección" }
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id as any)}
+                        style={{
+                          padding: "0.5rem 1rem",
+                          borderRadius: "var(--radius-sm)",
+                          background: activeTab === tab.id ? "rgba(0,212,255,0.1)" : "transparent",
+                          color: activeTab === tab.id ? "var(--accent-primary)" : "var(--text-muted)",
+                          border: `1px solid ${activeTab === tab.id ? "var(--accent-primary)" : "transparent"}`,
+                          fontWeight: activeTab === tab.id ? 700 : 500,
+                          fontSize: "0.85rem",
+                          cursor: "pointer",
+                          transition: "all 0.2s",
+                          whiteSpace: "nowrap"
+                        }}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div style={{ marginTop: "1rem" }}>
+                    {activeTab === "radar" && <PoliticalNetworkGraph analysis={currentAnalysis} />}
+                    {activeTab === "lab" && <AdvancedIntelligenceLab analysis={currentAnalysis} />}
+                    {activeTab === "timeline" && <PredictiveTimeline analysis={currentAnalysis} />}
+                  </div>
                 </div>
               </div>
               </div>

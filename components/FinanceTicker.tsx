@@ -28,7 +28,7 @@ export default function FinanceTicker() {
 
   return (
     <div className="w-full bg-slate-950 border-b border-slate-800 text-xs sm:text-sm font-mono flex overflow-hidden whitespace-nowrap h-8 items-center text-slate-300">
-      <div className="animate-ticker flex space-x-12 px-4 shrink-0">
+      <div className="news-ticker-content" style={{ paddingLeft: "100px", display: "flex", gap: "3rem" }}>
         {[...items, ...items, ...items].map((item, i) => (
           <div key={i} className="flex items-center space-x-2">
             <span className="font-bold text-slate-400">{item.symbol}</span>
