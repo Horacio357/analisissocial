@@ -12,7 +12,7 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
   if (!network) return null;
 
   const width = 800;
-  const height = 400;
+  const height = 500;
   const centerX = width / 2;
   const centerY = height / 2;
 
@@ -38,7 +38,7 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
 
     return {
       x: centerX + Math.cos(angle) * distance,
-      y: centerY + Math.sin(angle) * distance
+      y: centerY + Math.sin(angle) * distance * 0.65 // Aplasta verticalmente (elipse) para no salirse del contenedor
     };
   };
 
@@ -63,7 +63,7 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
         </div>
       </div>
 
-      <div style={{ position: "relative", width: "100%", height: "400px" }}>
+      <div style={{ position: "relative", width: "100%", height: "500px", minHeight: "500px" }}>
         {/* SVG para las líneas */}
         <svg style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }} viewBox={`0 0 ${width} ${height}`}>
           <defs>
