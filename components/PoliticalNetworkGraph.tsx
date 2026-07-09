@@ -79,8 +79,9 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
 
           {/* Líneas a Aliados */}
           {allies.map((ally, i) => {
-            const pos = getPosition(i, allies.length, true, ally.strength);
-            const strokeW = Math.max(1, (ally.strength / 100) * 4);
+            const score = ally.score ?? ally.strength ?? 50;
+            const pos = getPosition(i, allies.length, true, score);
+            const strokeW = Math.max(1, (score / 100) * 4);
             return (
               <line 
                 key={`ally-line-${i}`}
@@ -93,8 +94,9 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
 
           {/* Líneas a Enemigos */}
           {enemies.map((enemy, i) => {
-            const pos = getPosition(i, enemies.length, false, enemy.conflictLevel);
-            const strokeW = Math.max(1, (enemy.conflictLevel / 100) * 4);
+            const score = enemy.score ?? enemy.conflictLevel ?? 50;
+            const pos = getPosition(i, enemies.length, false, score);
+            const strokeW = Math.max(1, (score / 100) * 4);
             return (
               <line 
                 key={`enemy-line-${i}`}
@@ -121,7 +123,8 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
 
         {/* Aliados */}
         {allies.map((ally, i) => {
-          const pos = getPosition(i, allies.length, true, ally.strength);
+          const score = ally.score ?? ally.strength ?? 50;
+          const pos = getPosition(i, allies.length, true, score);
           return (
             <div 
               key={`ally-${i}`}
@@ -145,7 +148,8 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
 
         {/* Enemigos */}
         {enemies.map((enemy, i) => {
-          const pos = getPosition(i, enemies.length, false, enemy.conflictLevel);
+          const score = enemy.score ?? enemy.conflictLevel ?? 50;
+          const pos = getPosition(i, enemies.length, false, score);
           return (
             <div 
               key={`enemy-${i}`}
