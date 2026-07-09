@@ -440,7 +440,7 @@ export default function HomePage() {
 
                   <div style={{ marginTop: "1rem", flexGrow: 1, display: "flex", flexDirection: "column" }}>
                     {activeTab === "radar" && <PoliticalNetworkGraph analysis={currentAnalysis} />}
-                    {activeTab === "map" && <HeatMapArgentina provinceData={currentAnalysis.provinceData} personalityName={currentAnalysis.name} />}
+                    {activeTab === "map" && <HeatMapArgentina provinceData={currentAnalysis.provinceData} personalityName={currentAnalysis.name} archetype={currentAnalysis.archetype} />}
                     {activeTab === "lab" && <AdvancedIntelligenceLab analysis={currentAnalysis} />}
                     {activeTab === "timeline" && <PredictiveTimeline analysis={currentAnalysis} />}
                   </div>

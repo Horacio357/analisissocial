@@ -9,6 +9,7 @@ import { ARCHETYPE_CONFIG, sentimentToColor } from "@/lib/utils";
 interface HeatMapArgentinaProps {
   provinceData?: Record<string, ProvinceMetric>;
   personalityName?: string;
+  archetype?: string;
   mode?: "sentiment" | "intensity";
 }
 
@@ -40,7 +41,14 @@ function sentimentToStroke(sentiment: number): string {
   return "rgba(239, 68, 68, 0.6)";
 }
 
-export default function HeatMapArgentina({ provinceData, personalityName, mode = "sentiment" }: HeatMapArgentinaProps) {
+function hexToRgba(hex: string, alpha: number) {
+  const r = parseInt(hex.slice(1, 3), 16) || 0;
+  const g = parseInt(hex.slice(3, 5), 16) || 0;
+  const b = parseInt(hex.slice(5, 7), 16) || 0;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+export default function HeatMapArgentina({ provinceData, personalityName, archetype = "hero", mode = "sentiment" }: HeatMapArgentinaProps) {
   const [hovered, setHovered] = useState<HoveredProvince | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -98,12 +106,21 @@ export default function HeatMapArgentina({ provinceData, personalityName, mode =
           {ARGENTINA_PROVINCES.map(province => {
             const metric = getMetric(province.id);
             const isHovered = hovered?.id === province.id;
+            const baseColorHex = ARCHETYPE_CONFIG[archetype as any]?.color || "#34d399";
+            
+            const getThemedColor = (sentiment: number, intensity: number) => {
+              // Convertir sentiment (-1 a 1) a alpha (0.1 a 0.9)
+              const normalized = (sentiment + 1) / 2;
+              const alpha = 0.15 + (normalized * 0.75) * intensity;
+              return hexToRgba(baseColorHex, alpha);
+            };
+
             const fillColor = metric
-              ? sentimentToHeatColor(metric.sentiment, metric.intensity)
-              : "rgba(30, 58, 110, 0.4)";
+              ? getThemedColor(metric.sentiment, metric.intensity)
+              : "rgba(255, 255, 255, 0.03)";
             const strokeColor = metric
-              ? sentimentToStroke(metric.sentiment)
-              : "rgba(0,212,255,0.15)";
+              ? hexToRgba(baseColorHex, 0.5)
+              : "rgba(255, 255, 255, 0.08)";
 
             return (
               <g key={province.id}>
@@ -283,11 +300,7 @@ export default function HeatMapArgentina({ provinceData, personalityName, mode =
 
       {/* Leyenda del mapa */}
       <div style={{ marginTop: "1rem" }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.25rem", marginBottom: "0.3rem" }}>
-          {["#dc2626", "#f97316", "#6b7280", "#34d399", "#10b981"].map((c, i) => (
-            <div key={i} style={{ width: "100%", height: "8px", background: c, borderRadius: "2px", flex: 1 }} />
-          ))}
-        </div>
+        <div style={{ width: "100%", height: "6px", background: `linear-gradient(to right, rgba(255,255,255,0.05), ${ARCHETYPE_CONFIG[archetype as any]?.color || "#34d399"})`, borderRadius: "3px", marginBottom: "0.5rem" }} />
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>Muy desfavorable</span>
           <span style={{ fontSize: "0.65rem", color: "var(--text-muted)" }}>Neutro</span>

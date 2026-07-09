@@ -317,14 +317,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // 2. Mock conocido (no consume APIs)
-  if (!forceRefresh) {
-    const mock = MOCK_PERSONALITIES.find(p => p.id === id || p.name.toLowerCase() === name.toLowerCase());
-    if (mock) {
-      analysisCache.set(id, { data: mock, expiresAt: Date.now() + 30*24*60*60*1000 });
-      return NextResponse.json({ ...mock, fromCache: false, aiPowered: false });
-    }
-  }
+  // 2. [REMOVIDO] No usar MOCK para asegurar que siempre haya info espectacular y en tiempo real.
 
   // 3. Noticias reales y Comentarios de YouTube (Motor Triple)
   const [articles, youtubeComments] = await Promise.all([
