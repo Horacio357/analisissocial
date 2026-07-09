@@ -108,6 +108,30 @@ export const MOCK_PROVINCE_SENTIMENTS: Record<string, ProvinceMetric> = {
   "tierra-del-fuego": { sentiment: 0.4, intensity: 0.28, dominantArchetype: "hero" },
 };
 
+export const CRISTINA_PROVINCES: Record<string, ProvinceMetric> = {
+  ...MOCK_PROVINCE_SENTIMENTS,
+  "buenos-aires": { sentiment: 0.45, intensity: 0.9, dominantArchetype: "hero" }, // Fuerte
+  "buenos-aires-ciudad": { sentiment: -0.5, intensity: 0.8, dominantArchetype: "villain" }, // Rechazo
+  "cordoba": { sentiment: -0.8, intensity: 0.95, dominantArchetype: "villain" }, // Fuerte rechazo
+  "mendoza": { sentiment: -0.6, intensity: 0.85, dominantArchetype: "villain" }, // Fuerte rechazo
+  "santa-fe": { sentiment: -0.3, intensity: 0.7, dominantArchetype: "villain" },
+  "santiago-del-estero": { sentiment: 0.6, intensity: 0.8, dominantArchetype: "hero" }, // Fuerte
+  "formosa": { sentiment: 0.5, intensity: 0.7, dominantArchetype: "hero" },
+  "chaco": { sentiment: 0.4, intensity: 0.6, dominantArchetype: "guardian" },
+  "tucuman": { sentiment: 0.2, intensity: 0.5, dominantArchetype: "guardian" },
+  "santa-cruz": { sentiment: 0.5, intensity: 0.9, dominantArchetype: "hero" },
+};
+
+export const MILEI_PROVINCES: Record<string, ProvinceMetric> = {
+  ...MOCK_PROVINCE_SENTIMENTS,
+  "cordoba": { sentiment: 0.6, intensity: 0.9, dominantArchetype: "hero" }, // Fuerte apoyo
+  "mendoza": { sentiment: 0.5, intensity: 0.8, dominantArchetype: "hero" }, // Fuerte apoyo
+  "buenos-aires-ciudad": { sentiment: 0.3, intensity: 0.7, dominantArchetype: "hero" },
+  "buenos-aires": { sentiment: -0.2, intensity: 0.8, dominantArchetype: "trickster" }, // Dividido/Negativo
+  "santiago-del-estero": { sentiment: -0.4, intensity: 0.6, dominantArchetype: "villain" },
+  "formosa": { sentiment: -0.5, intensity: 0.7, dominantArchetype: "villain" },
+};
+
 export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
   {
     id: "javier-milei",
@@ -125,7 +149,7 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
       positive: ["El ordenamiento de las cuentas públicas demuestra un plan económico serio.", "Audacia para avanzar en reformas estructurales necesarias."],
       negative: ["Las inconsistencias internas desgastan el relato de la austeridad.", "Inestabilidad en la gestión diaria por falta de consensos políticos."]
     },
-    provinceData: MOCK_PROVINCE_SENTIMENTS,
+    provinceData: MILEI_PROVINCES,
     topNews: [],
     keywords: ["libertad", "ajuste", "motosierra", "dolarización", "reforma"],
     strategicRecommendations: [
@@ -241,7 +265,7 @@ export const MOCK_PERSONALITIES: PersonalityAnalysis[] = [
       positive: ["Protección de los derechos laborales y sociales.", "Liderazgo firme ante los poderes concentrados."],
       negative: ["Agotamiento del modelo económico intervencionista.", "Asociación persistente con causas de corrupción y opacidad judicial."]
     },
-    provinceData: MOCK_PROVINCE_SENTIMENTS,
+    provinceData: CRISTINA_PROVINCES,
     topNews: [],
     keywords: ["conurbano", "oposición", "documento", "PJ", "reaparición"],
     strategicRecommendations: [

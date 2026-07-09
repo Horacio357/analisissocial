@@ -28,7 +28,7 @@ function sentimentToHeatColor(sentiment: number, intensity: number): string {
   if (sentiment > 0.5) return `rgba(16, 185, 129, ${alpha})`; // verde intenso
   if (sentiment > 0.25) return `rgba(52, 211, 153, ${alpha})`; // verde suave
   if (sentiment > 0.05) return `rgba(110, 231, 183, ${alpha})`; // verde muy suave
-  if (sentiment > -0.05) return `rgba(100, 116, 139, ${alpha})`; // gris neutro
+  if (sentiment > -0.05) return `rgba(234, 179, 8, ${alpha})`; // amarillo/neutro
   if (sentiment > -0.25) return `rgba(251, 146, 60, ${alpha})`; // naranja
   if (sentiment > -0.5) return `rgba(239, 68, 68, ${alpha})`; // rojo suave
   return `rgba(220, 38, 38, ${alpha})`; // rojo intenso
@@ -36,7 +36,7 @@ function sentimentToHeatColor(sentiment: number, intensity: number): string {
 
 function sentimentToStroke(sentiment: number): string {
   if (sentiment > 0.2) return "rgba(52, 211, 153, 0.6)";
-  if (sentiment > -0.2) return "rgba(100, 116, 139, 0.4)";
+  if (sentiment > -0.2) return "rgba(234, 179, 8, 0.6)";
   return "rgba(239, 68, 68, 0.6)";
 }
 
