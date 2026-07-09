@@ -3,7 +3,7 @@ export type ArchetypeKey = "hero" | "villain" | "sage" | "trickster" | "guardian
 export interface PersonalityAnalysis {
   id: string;
   name: string;
-  category: "politica" | "deportes" | "social" | "entretenimiento" | "cultura";
+  category: string;
   imageUrl?: string;
   archetype: ArchetypeKey;
   archetypeScore: number; // 0-100 confidence

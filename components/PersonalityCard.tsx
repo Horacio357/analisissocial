@@ -26,13 +26,15 @@ export default function PersonalityCard({ analysis, onReanalyze, isPremium = fal
   const expired = isAnalysisExpired(analysis.analyzedAt, isPremium);
   const sentColor = sentimentToColor(analysis.sentimentOverall);
   const sentPct = sentimentToPercent(analysis.sentimentOverall);
+  const isTopic = analysis.category === "tema nacional";
+  const themeColor = isTopic ? "var(--accent-primary)" : archConf.color;
 
   const TrendIcon = analysis.trend === "rising" ? TrendingUp : analysis.trend === "falling" ? TrendingDown : Minus;
   const trendColor = analysis.trend === "rising" ? "#34d399" : analysis.trend === "falling" ? "#f97316" : "var(--text-muted)";
 
   return (
     <div className="glass-card animate-fade-up" style={{
-      border: `1px solid ${archConf.color}25`,
+      border: `1px solid ${themeColor}25`,
       position: "relative",
       overflow: "visible",
     }}>
@@ -43,7 +45,7 @@ export default function PersonalityCard({ analysis, onReanalyze, isPremium = fal
         left: "20%",
         right: "20%",
         height: "1px",
-        background: `linear-gradient(90deg, transparent, ${archConf.color}, transparent)`,
+        background: `linear-gradient(90deg, transparent, ${themeColor}, transparent)`,
         borderRadius: "1px",
       }} />
 
@@ -51,9 +53,11 @@ export default function PersonalityCard({ analysis, onReanalyze, isPremium = fal
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.25rem" }}>
         <div style={{ flex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap", marginBottom: "0.4rem" }}>
-            <span className={`badge badge-${analysis.archetype}`}>
-              {archConf.emoji} {archConf.label}
-            </span>
+            {!isTopic && (
+              <span className={`badge badge-${analysis.archetype}`}>
+                {archConf.emoji} {archConf.label}
+              </span>
+            )}
             <span style={{
               fontSize: "0.7rem",
               color: "var(--text-muted)",
@@ -82,24 +86,26 @@ export default function PersonalityCard({ analysis, onReanalyze, isPremium = fal
         </div>
 
         {/* Score del arquetipo */}
-        <div style={{ textAlign: "center", flexShrink: 0 }}>
-          <div style={{
-            width: "56px",
-            height: "56px",
-            borderRadius: "50%",
-            border: `2px solid ${archConf.color}`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: `${archConf.color}12`,
-            boxShadow: `0 0 16px ${archConf.color}25`,
-          }}>
-            <span style={{ fontSize: "1.1rem", fontFamily: "Outfit", fontWeight: 800, color: archConf.color }}>
-              {analysis.archetypeScore}
-            </span>
+        {!isTopic && (
+          <div style={{ textAlign: "center", flexShrink: 0 }}>
+            <div style={{
+              width: "56px",
+              height: "56px",
+              borderRadius: "50%",
+              border: `2px solid ${archConf.color}`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: `${archConf.color}12`,
+              boxShadow: `0 0 16px ${archConf.color}25`,
+            }}>
+              <span style={{ fontSize: "1.1rem", fontFamily: "Outfit", fontWeight: 800, color: archConf.color }}>
+                {analysis.archetypeScore}
+              </span>
+            </div>
+            <span style={{ fontSize: "0.6rem", color: "var(--text-muted)", display: "block", marginTop: "0.2rem" }}>confianza</span>
           </div>
-          <span style={{ fontSize: "0.6rem", color: "var(--text-muted)", display: "block", marginTop: "0.2rem" }}>confianza</span>
-        </div>
+        )}
       </div>
 
       {/* Sentimiento global */}
@@ -142,15 +148,15 @@ export default function PersonalityCard({ analysis, onReanalyze, isPremium = fal
         fontSize: "0.85rem",
         color: "var(--text-secondary)",
         lineHeight: 1.65,
-        marginBottom: (analysis as PersonalityAnalysis & { archetypeReasoning?: string }).archetypeReasoning ? "0.6rem" : "1rem",
-        borderLeft: `2px solid ${archConf.color}50`,
+        marginBottom: (!isTopic && (analysis as PersonalityAnalysis & { archetypeReasoning?: string }).archetypeReasoning) ? "0.6rem" : "1rem",
+        borderLeft: `2px solid ${themeColor}50`,
         paddingLeft: "0.75rem",
       }}>
         {analysis.summary}
       </p>
 
-      {/* Razonamiento del arquetipo (solo con Gemini) */}
-      {(analysis as PersonalityAnalysis & { archetypeReasoning?: string }).archetypeReasoning && (
+      {/* Razonamiento del arquetipo (solo con Gemini y si no es tema nacional) */}
+      {!isTopic && (analysis as PersonalityAnalysis & { archetypeReasoning?: string }).archetypeReasoning && (
         <div style={{
           padding: "0.6rem 0.75rem",
           background: `${archConf.color}08`,

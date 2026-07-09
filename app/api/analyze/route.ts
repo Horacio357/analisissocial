@@ -193,7 +193,7 @@ ${a.description?.slice(0,200)||""}`)
   const isInfluencer = !knownTopic && /streamer|youtuber|influencer|twitch|streaming|gamer|content|tiktok|instagram|seguidor|suscriptor|coscu|mazza|olga|luquitas|martita|fort|gastón|papu/.test(allText);
   const isSport = /futbol|tenis|basquet|deporte|atleta|nba|liga|cancha|gol|partido|jugador|entrenador|dt/.test(allText);
   const isArtist = /cantante|actor|actriz|músico|banda|album|película|teatro|arte|cultura/.test(allText);
-  const category = isInfluencer ? "influencer/streamer digital" : isSport ? "figura del deporte" : isArtist ? "figura del entretenimiento y la cultura" : "figura política";
+  const category = knownTopic ? "tema nacional" : (isInfluencer ? "influencer/streamer digital" : isSport ? "figura del deporte" : isArtist ? "figura del entretenimiento y la cultura" : "figura política");
   
   const sectorInstructions = isInfluencer ? `
 CONTEXTO DE SECTOR (Influencer/Streamer):
@@ -540,7 +540,7 @@ export async function GET(request: NextRequest) {
     analysis = {
       id,
       name,
-      category: "politica" as const,
+      category: (geminiResult as any).category || category,
       archetype: geminiResult.archetype,
       archetypeScore: geminiResult.archetypeScore,
       archetypeReasoning: geminiResult.archetypeReasoning,
@@ -625,7 +625,7 @@ export async function GET(request: NextRequest) {
     analysis = {
       id,
       name,
-      category: "politica" as const,
+      category: category,
       archetype,
       archetypeScore: Math.round(60 + Math.random()*25),
       summary: finalSummary,

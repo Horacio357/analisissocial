@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useState } from "react";
 
 const PRESET_TOPICS = [
@@ -50,7 +50,7 @@ export default function TopicSelector({ onSelect, activeTopic }: TopicSelectorPr
         marginBottom: "0.75rem",
         fontWeight: 600,
       }}>
-        🌍 Pulso Nacional — Temas
+        Pulso Nacional — Temas
       </div>
 
       {/* Chips de temas */}
@@ -86,13 +86,11 @@ export default function TopicSelector({ onSelect, activeTopic }: TopicSelectorPr
                 boxShadow: isActive ? "0 0 12px rgba(99,102,241,0.35)" : "none",
               }}
             >
-              <span>{topic.emoji}</span>
               <span>{topic.label}</span>
             </button>
           );
         })}
 
-        {/* Botón tema personalizado */}
         <button
           onClick={() => setShowCustom(!showCustom)}
           style={{
@@ -110,7 +108,6 @@ export default function TopicSelector({ onSelect, activeTopic }: TopicSelectorPr
             fontFamily: "Inter, sans-serif",
           }}
         >
-          <span>✏️</span>
           <span>Otro tema...</span>
         </button>
       </div>

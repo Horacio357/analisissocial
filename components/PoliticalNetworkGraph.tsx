@@ -3,13 +3,15 @@
 import { PersonalityAnalysis } from "@/lib/types";
 import { useState } from "react";
 import Tooltip from "./Tooltip";
-import { User, Zap, ShieldCheck } from "lucide-react";
+import { User, Zap, ShieldCheck, Globe } from "lucide-react";
 
 export default function PoliticalNetworkGraph({ analysis }: { analysis: PersonalityAnalysis }) {
   const network = analysis.advancedMetrics?.network;
   const [hoveredNode, setHoveredNode] = useState<{name: string, reason: string, type: 'ally'|'enemy'} | null>(null);
 
   if (!network) return null;
+
+  const isTopic = analysis.category === "tema nacional";
 
   const width = 800;
   const height = 500;
@@ -56,10 +58,10 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
         <div>
           <h3 style={{ fontFamily: "Outfit", fontSize: "1.5rem", fontWeight: 800, color: "var(--text-primary)", display: "flex", alignItems: "center", gap: "0.5rem" }}>
             <Zap size={24} color="var(--accent-primary)" />
-            Matriz de Alianzas y Enemigos
-            <Tooltip content="Grafo de red generado en tiempo real. Líneas verdes: Cooperación. Líneas rojas: Fricción actual en agenda." />
+            {isTopic ? "Ecosistema de Actores e Influencias" : "Matriz de Alianzas y Enemigos"}
+            <Tooltip content={isTopic ? "Matriz de actores sociales e institucionales clave. Líneas verdes: Impulsores y aliados. Líneas rojas: Detractores, obstáculos o factores de tensión." : "Grafo de red generado en tiempo real. Líneas verdes: Cooperación. Líneas rojas: Fricción actual en agenda."} />
           </h3>
-          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>Tablero de ajedrez estratégico de la figura.</p>
+          <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>{isTopic ? "Factores y agentes influyentes en el debate de este tema." : "Tablero de ajedrez estratégico de la figura."}</p>
         </div>
       </div>
 
@@ -117,8 +119,14 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
           display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
           boxShadow: "0 0 20px rgba(0, 212, 255, 0.4)", zIndex: 10
         }}>
-          <User size={32} color="var(--accent-primary)" />
-          <span style={{ fontSize: "0.6rem", fontWeight: 700, marginTop: "4px", color: "white", textAlign: "center", lineHeight: 1 }}>{analysis.name.split(" ")[0]}</span>
+          {isTopic ? (
+            <Globe size={32} color="var(--accent-primary)" />
+          ) : (
+            <User size={32} color="var(--accent-primary)" />
+          )}
+          <span style={{ fontSize: "0.6rem", fontWeight: 700, marginTop: "4px", color: "white", textAlign: "center", lineHeight: 1 }}>
+            {isTopic ? analysis.name.slice(0, 10) : analysis.name.split(" ")[0]}
+          </span>
         </div>
 
         {/* Aliados */}

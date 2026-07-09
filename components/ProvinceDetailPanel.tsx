@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 import { useEffect, useState } from "react";
 
 interface ProvinceAnalysis {
@@ -25,12 +25,12 @@ interface ProvinceDetailPanelProps {
   category?: string;
 }
 
-const EMOTION_LABELS: Record<string, { label: string; color: string; emoji: string }> = {
-  fear:    { label: "Miedo",     color: "#ef4444", emoji: "😨" },
-  anger:   { label: "Bronca",    color: "#f97316", emoji: "😡" },
-  hope:    { label: "Esperanza", color: "#34d399", emoji: "🌱" },
-  pride:   { label: "Orgullo",   color: "#60a5fa", emoji: "💪" },
-  fatigue: { label: "Fatiga",    color: "#a78bfa", emoji: "😮‍💨" },
+const EMOTION_LABELS: Record<string, { label: string; color: string }> = {
+  fear:    { label: "Miedo",     color: "#ef4444" },
+  anger:   { label: "Bronca",    color: "#f97316" },
+  hope:    { label: "Esperanza", color: "#34d399" },
+  pride:   { label: "Orgullo",   color: "#60a5fa" },
+  fatigue: { label: "Fatiga",    color: "#a78bfa" },
 };
 
 function sentimentLabel(s: number) {
@@ -123,7 +123,7 @@ export default function ProvinceDetailPanel({
                 Análisis Territorial IA
               </div>
               <h2 style={{ fontSize: "1.4rem", fontWeight: 700, color: "var(--text-primary)", fontFamily: "Outfit, sans-serif", margin: 0 }}>
-                🗺️ {provinceName}
+                {provinceName}
               </h2>
               <div style={{ fontSize: "0.82rem", color: "var(--accent-primary)", marginTop: "0.25rem" }}>
                 Percepción sobre: <strong>"{topic}"</strong>
@@ -228,7 +228,7 @@ export default function ProvinceDetailPanel({
                 borderRadius: "var(--radius-md)",
               }}>
                 <div style={{ fontSize: "0.72rem", color: "var(--accent-primary)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.5rem", fontWeight: 600 }}>
-                  🧠 Análisis IA {data.engine === "groq" ? "(Llama 3.3)" : "(Gemini)"}
+                  Análisis IA {data.engine === "groq" ? "(Llama 3.3)" : "(Gemini)"}
                 </div>
                 <p style={{ fontSize: "0.85rem", color: "var(--text-secondary)", lineHeight: 1.65, margin: 0 }}>
                   {data.summary}
@@ -239,7 +239,7 @@ export default function ProvinceDetailPanel({
               {data.localFactors?.length > 0 && (
                 <div>
                   <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.6rem", fontWeight: 600 }}>
-                    📍 Factores Locales Clave
+                    Factores Locales Clave
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
                     {data.localFactors.map((f, i) => (
@@ -264,7 +264,7 @@ export default function ProvinceDetailPanel({
               {data.emotionalBreakdown && (
                 <div>
                   <div style={{ fontSize: "0.75rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.6rem", fontWeight: 600 }}>
-                    💭 Espectro Emocional Provincial
+                    Espectro Emocional Provincial
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                     {Object.entries(data.emotionalBreakdown).map(([key, value]) => {
@@ -272,7 +272,6 @@ export default function ProvinceDetailPanel({
                       if (!em) return null;
                       return (
                         <div key={key} style={{ display: "flex", alignItems: "center", gap: "0.6rem" }}>
-                          <span style={{ fontSize: "0.9rem", width: "20px", textAlign: "center" }}>{em.emoji}</span>
                           <span style={{ fontSize: "0.78rem", color: "var(--text-muted)", width: "72px", flexShrink: 0 }}>{em.label}</span>
                           <div style={{ flex: 1, height: "6px", background: "var(--glass-bg)", borderRadius: "3px", overflow: "hidden", border: "1px solid var(--glass-border)" }}>
                             <div style={{ height: "100%", width: `${value}%`, background: em.color, borderRadius: "3px", transition: "width 0.8s ease" }} />
@@ -296,7 +295,7 @@ export default function ProvinceDetailPanel({
                   color: "var(--text-muted)",
                   lineHeight: 1.6,
                 }}>
-                  <span style={{ color: "#fbbf24", fontWeight: 600 }}>📜 Contexto: </span>
+                  <span style={{ color: "#fbbf24", fontWeight: 600 }}>Contexto: </span>
                   {data.historicalContext}
                 </div>
               )}
