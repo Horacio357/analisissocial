@@ -20,19 +20,24 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
   const allies = network.allies || [];
   const enemies = network.enemies || [];
 
-  const getPosition = (index: number, total: number, isAlly: boolean) => {
-    const radiusX = 250;
-    const radiusY = 120;
+  const getPosition = (index: number, total: number, isAlly: boolean, score: number) => {
+    // Mayor score (fuerza o conflicto) = más cerca del centro
+    // Radio mínimo = 80px (para no pisar al centro), Radio máximo = 320px
+    const distance = 80 + ((100 - score) / 100) * 240; 
+    
     // Aliados a la izquierda (180 grados +-), Enemigos a la derecha (0 grados +-)
     const baseAngle = isAlly ? Math.PI : 0;
-    const spread = Math.PI / 2; // Spread de 90 grados
+    const spread = Math.PI * 0.8; // 144 grados de apertura para que entren más nodos
     const angleStep = total > 1 ? spread / (total - 1) : 0;
     const startAngle = baseAngle - (spread / 2);
+    
+    // Para que no queden todos en línea recta perfecta, alternamos un poco el ángulo vertical
+    // y aplicamos la distancia calculada (creando efecto de nube/constelación)
     const angle = startAngle + (angleStep * index);
 
     return {
-      x: centerX + Math.cos(angle) * radiusX,
-      y: centerY + Math.sin(angle) * radiusY
+      x: centerX + Math.cos(angle) * distance,
+      y: centerY + Math.sin(angle) * distance * 0.6 // Achatar un poco verticalmente
     };
   };
 
@@ -73,7 +78,7 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
 
           {/* Líneas a Aliados */}
           {allies.map((ally, i) => {
-            const pos = getPosition(i, allies.length, true);
+            const pos = getPosition(i, allies.length, true, ally.strength);
             const strokeW = Math.max(1, (ally.strength / 100) * 4);
             return (
               <line 
@@ -87,7 +92,7 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
 
           {/* Líneas a Enemigos */}
           {enemies.map((enemy, i) => {
-            const pos = getPosition(i, enemies.length, false);
+            const pos = getPosition(i, enemies.length, false, enemy.conflictLevel);
             const strokeW = Math.max(1, (enemy.conflictLevel / 100) * 4);
             return (
               <line 
@@ -115,22 +120,22 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
 
         {/* Aliados */}
         {allies.map((ally, i) => {
-          const pos = getPosition(i, allies.length, true);
+          const pos = getPosition(i, allies.length, true, ally.strength);
           return (
             <div 
               key={`ally-${i}`}
               onMouseEnter={() => setHoveredNode({name: ally.name, reason: ally.reason, type: 'ally'})}
               onMouseLeave={() => setHoveredNode(null)}
               style={{
-                position: "absolute", left: `calc(${((pos.x) / width) * 100}% - 30px)`, top: `calc(${((pos.y) / height) * 100}% - 30px)`,
-                width: "60px", height: "60px", borderRadius: "50%", background: "rgba(16, 185, 129, 0.1)", 
+                position: "absolute", left: `calc(${((pos.x) / width) * 100}% - 20px)`, top: `calc(${((pos.y) / height) * 100}% - 20px)`,
+                width: "40px", height: "40px", borderRadius: "50%", background: "rgba(16, 185, 129, 0.1)", 
                 border: "2px solid #10b981", display: "flex", alignItems: "center", justifyContent: "center",
                 cursor: "help", transition: "transform 0.2s", zIndex: 5,
-                transform: hoveredNode?.name === ally.name ? "scale(1.1)" : "scale(1)"
+                transform: hoveredNode?.name === ally.name ? "scale(1.2)" : "scale(1)"
               }}
             >
-              <ShieldCheck size={24} color="#10b981" />
-              <span style={{ position: "absolute", bottom: "-25px", fontSize: "0.75rem", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap" }}>
+              <ShieldCheck size={20} color="#10b981" />
+              <span style={{ position: "absolute", bottom: "-20px", fontSize: "0.65rem", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap" }}>
                 {ally.name}
               </span>
             </div>
@@ -139,22 +144,22 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
 
         {/* Enemigos */}
         {enemies.map((enemy, i) => {
-          const pos = getPosition(i, enemies.length, false);
+          const pos = getPosition(i, enemies.length, false, enemy.conflictLevel);
           return (
             <div 
               key={`enemy-${i}`}
               onMouseEnter={() => setHoveredNode({name: enemy.name, reason: enemy.reason, type: 'enemy'})}
               onMouseLeave={() => setHoveredNode(null)}
               style={{
-                position: "absolute", left: `calc(${((pos.x) / width) * 100}% - 30px)`, top: `calc(${((pos.y) / height) * 100}% - 30px)`,
-                width: "60px", height: "60px", borderRadius: "50%", background: "rgba(239, 68, 68, 0.1)", 
+                position: "absolute", left: `calc(${((pos.x) / width) * 100}% - 20px)`, top: `calc(${((pos.y) / height) * 100}% - 20px)`,
+                width: "40px", height: "40px", borderRadius: "50%", background: "rgba(239, 68, 68, 0.1)", 
                 border: "2px solid #ef4444", display: "flex", alignItems: "center", justifyContent: "center",
                 cursor: "help", transition: "transform 0.2s", zIndex: 5,
-                transform: hoveredNode?.name === enemy.name ? "scale(1.1)" : "scale(1)"
+                transform: hoveredNode?.name === enemy.name ? "scale(1.2)" : "scale(1)"
               }}
             >
-              <Zap size={24} color="#ef4444" />
-              <span style={{ position: "absolute", bottom: "-25px", fontSize: "0.75rem", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap" }}>
+              <Zap size={20} color="#ef4444" />
+              <span style={{ position: "absolute", bottom: "-20px", fontSize: "0.65rem", fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap" }}>
                 {enemy.name}
               </span>
             </div>

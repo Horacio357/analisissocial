@@ -190,10 +190,16 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
     "hardAgendaCorrelation": "Breve análisis de cómo su imagen se ata a eventos económicos duros (dólar, inflación, desocupación)",
     "network": {
       "allies": [
-        { "name": "Aliado 1", "strength": <0-100>, "reason": "Por qué son aliados hoy" }
+        { "name": "Aliado 1 (Nombre Real)", "strength": <0-100>, "reason": "Por qué son aliados hoy" },
+        { "name": "Aliado 2", "strength": <0-100>, "reason": "..." },
+        { "name": "Aliado 3", "strength": <0-100>, "reason": "..." },
+        { "name": "Aliado 4 (mínimo 4)", "strength": <0-100>, "reason": "..." }
       ],
       "enemies": [
-        { "name": "Enemigo 1", "conflictLevel": <0-100>, "reason": "Motivo del conflicto actual" }
+        { "name": "Enemigo 1 (Nombre Real)", "conflictLevel": <0-100>, "reason": "Motivo del conflicto actual" },
+        { "name": "Enemigo 2", "conflictLevel": <0-100>, "reason": "..." },
+        { "name": "Enemigo 3", "conflictLevel": <0-100>, "reason": "..." },
+        { "name": "Enemigo 4 (mínimo 4)", "conflictLevel": <0-100>, "reason": "..." }
       ]
     },
     "timeline": [
