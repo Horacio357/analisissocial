@@ -7,6 +7,7 @@ import PersonalityCard from "@/components/PersonalityCard";
 import HeatMapArgentina from "@/components/HeatMapArgentina";
 import SocialPulse from "@/components/SocialPulse";
 import NewsTickerBar from "@/components/NewsTickerBar";
+import FinanceTicker from "@/components/FinanceTicker";
 import PersonalityComparator from "@/components/PersonalityComparator";
 import NarrativasEmergentes from "@/components/NarrativasEmergentes";
 import Top20Ranking from "@/components/Top20Ranking";
@@ -142,7 +143,9 @@ export default function HomePage() {
       </nav>
 
       {/* ─── NEWS TICKER ─────────────────────────────────────────────────── */}
+      {/* ─── TICKERS ──────────────────────────────────────────────────────── */}
       <NewsTickerBar />
+      <FinanceTicker />
 
       <main className="main-container" style={{ maxWidth: "1440px", margin: "0 auto", display: "flex", flexDirection: "column", gap: "2rem" }}>
         
@@ -342,74 +345,76 @@ export default function HomePage() {
                 </h2>
               </div>
 
-              <div className="responsive-grid-2" style={{
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
                 gap: "1.5rem",
-                maxWidth: "1100px",
+                maxWidth: "1300px",
                 margin: "0 auto",
+                alignItems: "start"
               }}>
-                <PersonalityCard
-                  analysis={currentAnalysis}
-                  onReanalyze={handleReanalyze}
-                />
-                <div className="glass-card">
-                  <HeatMapArgentina
-                    provinceData={currentAnalysis.provinceData}
-                    personalityName={currentAnalysis.name}
+                {/* Columna Izquierda: Perfil, Mapa y Noticias */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                  <PersonalityCard
+                    analysis={currentAnalysis}
+                    onReanalyze={handleReanalyze}
                   />
-                  {/* Noticias recientes */}
-                  {currentAnalysis.topNews.length > 0 && (
-                    <div style={{ marginTop: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--glass-border)" }}>
-                      <div className="section-label" style={{ marginBottom: "0.75rem" }}>Noticias Recientes</div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
-                        {currentAnalysis.topNews.slice(0, 4).map((news, i) => (
-                          <a
-                            key={i}
-                            href={news.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{
-                              padding: "0.6rem",
-                              background: "rgba(255,255,255,0.02)",
-                              borderRadius: "var(--radius-sm)",
-                              border: "1px solid rgba(255,255,255,0.05)",
-                              textDecoration: "none",
-                              display: "block",
-                              transition: "background 0.2s",
-                            }}
-                            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(0,212,255,0.04)"; }}
-                            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)"; }}
-                          >
-                            <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", lineHeight: 1.4 }}>
-                              {news.title}
-                            </p>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                              <span style={{ fontSize: "0.68rem", color: "var(--accent-primary)" }}>{news.source}</span>
-                              <span style={{
-                                fontSize: "0.65rem",
-                                padding: "0.1rem 0.4rem",
-                                borderRadius: "4px",
-                                background: news.sentiment > 0.1 ? "rgba(16,185,129,0.1)" : news.sentiment < -0.1 ? "rgba(239,68,68,0.1)" : "rgba(107,114,128,0.1)",
-                                color: news.sentiment > 0.1 ? "#34d399" : news.sentiment < -0.1 ? "#f87171" : "var(--text-muted)",
-                              }}>
-                                {news.sentiment > 0.1 ? "😊" : news.sentiment < -0.1 ? "😤" : "😐"} {news.sentiment > 0.1 ? "Positivo" : news.sentiment < -0.1 ? "Negativo" : "Neutro"}
-                              </span>
-                            </div>
-                          </a>
-                        ))}
+                  <div className="glass-card">
+                    <HeatMapArgentina
+                      provinceData={currentAnalysis.provinceData}
+                      personalityName={currentAnalysis.name}
+                    />
+                    {/* Noticias recientes */}
+                    {currentAnalysis.topNews.length > 0 && (
+                      <div style={{ marginTop: "1.5rem", paddingTop: "1.5rem", borderTop: "1px solid var(--glass-border)" }}>
+                        <div className="section-label" style={{ marginBottom: "0.75rem" }}>Noticias Recientes</div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: "0.6rem" }}>
+                          {currentAnalysis.topNews.slice(0, 4).map((news, i) => (
+                            <a
+                              key={i}
+                              href={news.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                padding: "0.6rem",
+                                background: "rgba(255,255,255,0.02)",
+                                borderRadius: "var(--radius-sm)",
+                                border: "1px solid rgba(255,255,255,0.05)",
+                                textDecoration: "none",
+                                display: "block",
+                                transition: "background 0.2s",
+                              }}
+                              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = "rgba(0,212,255,0.04)"; }}
+                              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.02)"; }}
+                            >
+                              <p style={{ fontSize: "0.8rem", color: "var(--text-secondary)", marginBottom: "0.25rem", lineHeight: 1.4 }}>
+                                {news.title}
+                              </p>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ fontSize: "0.68rem", color: "var(--accent-primary)" }}>{news.source}</span>
+                                <span style={{
+                                  fontSize: "0.65rem",
+                                  padding: "0.1rem 0.4rem",
+                                  borderRadius: "4px",
+                                  background: news.sentiment > 0.1 ? "rgba(16,185,129,0.1)" : news.sentiment < -0.1 ? "rgba(239,68,68,0.1)" : "rgba(107,114,128,0.1)",
+                                  color: news.sentiment > 0.1 ? "#34d399" : news.sentiment < -0.1 ? "#f87171" : "var(--text-muted)",
+                                }}>
+                                  {news.sentiment > 0.1 ? "😊" : news.sentiment < -0.1 ? "😤" : "😐"} {news.sentiment > 0.1 ? "Positivo" : news.sentiment < -0.1 ? "Negativo" : "Neutro"}
+                                </span>
+                              </div>
+                            </a>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
-
-                  {/* ─── CENTRO DE INTELIGENCIA ─── */}
+                    )}
+                  </div>
                   <IntelligenceHub analysis={currentAnalysis} />
+                </div>
 
-                  {/* ─── LABORATORIO AVANZADO (PRO 2.0) ─── */}
-                  <AdvancedIntelligenceLab analysis={currentAnalysis} />
-
-                  {/* ─── MATRIZ DE ALIANZAS Y ENEMIGOS ─── */}
+                {/* Columna Derecha: Laboratorio Avanzado, Radar y Timeline */}
+                <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
                   <PoliticalNetworkGraph analysis={currentAnalysis} />
-
-                  {/* ─── LINEA DE TIEMPO PREDICTIVA ─── */}
+                  <AdvancedIntelligenceLab analysis={currentAnalysis} />
                   <PredictiveTimeline analysis={currentAnalysis} />
                 </div>
               </div>

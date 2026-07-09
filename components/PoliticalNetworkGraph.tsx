@@ -21,23 +21,24 @@ export default function PoliticalNetworkGraph({ analysis }: { analysis: Personal
   const enemies = network.enemies || [];
 
   const getPosition = (index: number, total: number, isAlly: boolean, score: number) => {
-    // Mayor score (fuerza o conflicto) = más cerca del centro
-    // Radio mínimo = 80px (para no pisar al centro), Radio máximo = 320px
-    const distance = 80 + ((100 - score) / 100) * 240; 
+    // Offset para alternar el radio y evitar que los nodos se choquen si todos tienen score 100
+    const staggerOffset = (index % 2 === 0) ? 0 : 50;
     
-    // Aliados a la izquierda (180 grados +-), Enemigos a la derecha (0 grados +-)
-    const baseAngle = isAlly ? Math.PI : 0;
-    const spread = Math.PI * 0.8; // 144 grados de apertura para que entren más nodos
-    const angleStep = total > 1 ? spread / (total - 1) : 0;
-    const startAngle = baseAngle - (spread / 2);
+    // Distancia mínima 130px (fuera del nodo central), máxima 320px
+    const baseDistance = 130 + ((100 - score) / 100) * 190;
+    const distance = baseDistance + staggerOffset;
+
+    // Aumentar el ángulo de arco para que se esparzan más.
+    const arcSpread = Math.PI * 0.8; 
+    const startAngle = isAlly ? Math.PI - (arcSpread/2) : -(arcSpread/2);
     
-    // Para que no queden todos en línea recta perfecta, alternamos un poco el ángulo vertical
-    // y aplicamos la distancia calculada (creando efecto de nube/constelación)
-    const angle = startAngle + (angleStep * index);
+    // Dividir uniformemente a lo largo del arco
+    const angleStep = total > 1 ? arcSpread / (total - 1) : 0;
+    const angle = startAngle + (index * angleStep);
 
     return {
       x: centerX + Math.cos(angle) * distance,
-      y: centerY + Math.sin(angle) * distance * 0.6 // Achatar un poco verticalmente
+      y: centerY + Math.sin(angle) * distance
     };
   };
 
