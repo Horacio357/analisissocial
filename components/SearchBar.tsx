@@ -54,12 +54,15 @@ export default function SearchBar({ onResult, onLoading }: SearchBarProps) {
     if (!name.trim()) return;
 
     if (!user) {
+      const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
       const searches = parseInt(localStorage.getItem("free_searches") || "0");
-      if (searches >= 3) {
+      if (!isLocalhost && searches >= 3) {
         setError("Límite gratuito alcanzado (3/3). Iniciá sesión o pasate a Premium para seguir analizando.");
         return;
       }
-      localStorage.setItem("free_searches", (searches + 1).toString());
+      if (!isLocalhost) {
+        localStorage.setItem("free_searches", (searches + 1).toString());
+      }
     }
 
     setIsLoading(true);
