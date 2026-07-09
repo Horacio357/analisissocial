@@ -320,9 +320,9 @@ export default function HeatMapArgentina({ provinceData, personalityName, archet
           justifyContent: "space-between",
           alignItems: "center",
         }}>
-          <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Promedio Nacional</span>
+          <span style={{ fontSize: "0.78rem", color: "var(--text-muted)" }}>Aprobación Nacional Promedio</span>
           <span style={{ fontSize: "1rem", fontWeight: 700, fontFamily: "Outfit", color: sentimentToColor(nationalAvg) }}>
-            {sentimentLabel(nationalAvg)}
+            {sentimentLabel(nationalAvg)} ({Math.round(((nationalAvg + 1) / 2) * 100)}%)
           </span>
         </div>
       )}
