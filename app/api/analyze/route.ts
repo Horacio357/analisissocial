@@ -544,6 +544,41 @@ export async function GET(request: NextRequest) {
     fetchYouTubeComments(name)
   ]);
 
+  // ─── Detección de Categoría / Tema para el fallback y objeto de análisis ───
+  const articlesText = articles
+    .filter(a => a.source_name !== "Wikipedia")
+    .slice(0, 8)
+    .map((a, i) => `${a.title || ""} ${a.description || ""}`)
+    .join(" ");
+
+  const allTextForCat = `${name} ${articlesText}`.toLowerCase();
+
+  const KNOWN_TOPICS: Record<string, { emoji: string; description: string; archetype: string }> = {
+    "seguridad": { emoji: "🔒", description: "percepción de inseguridad, delito y fuerzas de seguridad en Argentina", archetype: "villain" },
+    "salud": { emoji: "🏥", description: "acceso al sistema de salud, calidad hospitalaria, medicamentos y cobertura médica en Argentina", archetype: "guardian" },
+    "nutrición": { emoji: "🥗", description: "hambre, asistencia alimentaria, comedores comunitarios y calidad nutricional en Argentina", archetype: "villain" },
+    "educación": { emoji: "📚", description: "calidad educativa, paros docentes, infraestructura escolar y acceso educativo en Argentina", archetype: "guardian" },
+    "economía": { emoji: "💰", description: "inflación, salarios, empleo, dólar y poder adquisitivo en Argentina", archetype: "villain" },
+    "medio ambiente": { emoji: "🌍", description: "contaminación, cambio climático, minería y recursos naturales en Argentina", archetype: "guardian" },
+    "energía": { emoji: "⚡", description: "cortes de luz, tarifas eléctricas, subsidios y crisis energética en Argentina", archetype: "villain" },
+    "vivienda": { emoji: "🏘️", description: "acceso a la tierra, alquileres, déficit habitacional y planes de vivienda en Argentina", archetype: "villain" },
+    "empleo": { emoji: "💼", description: "desempleo, trabajo informal, precariedad laboral y oportunidades en Argentina", archetype: "villain" },
+    "corrupción": { emoji: "⚖️", description: "corrupción gubernamental, transparencia institucional y confianza en el Estado en Argentina", archetype: "villain" },
+    "narcotráfico": { emoji: "🚨", description: "narcotráfico, crimen organizado y narcocriminalidad en Argentina", archetype: "villain" },
+    "pobreza": { emoji: "📉", description: "niveles de pobreza, indigencia, asistencia social y desigualdad en Argentina", archetype: "villain" },
+    "inflación": { emoji: "📈", description: "inflación, aumento de precios, impacto en el consumo y poder adquisitivo en Argentina", archetype: "villain" },
+    "drogas": { emoji: "💊", description: "consumo de sustancias, problemática de adicciones y políticas de salud mental en Argentina", archetype: "villain" },
+  };
+
+  const topicKey = Object.keys(KNOWN_TOPICS).find(k => name.toLowerCase().includes(k));
+  const knownTopic = topicKey ? KNOWN_TOPICS[topicKey] : null;
+
+  const isInfluencer = !knownTopic && /streamer|youtuber|influencer|twitch|streaming|gamer|content|tiktok|instagram|seguidor|suscriptor|coscu|mazza|olga|luquitas|martita|fort|gastón|papu/.test(allTextForCat);
+  const isSport = !knownTopic && /futbol|tenis|basquet|deporte|atleta|nba|liga|cancha|gol|partido|jugador|entrenador|dt/.test(allTextForCat);
+  const isArtist = !knownTopic && /cantante|actor|actriz|músico|banda|album|película|teatro|arte|cultura/.test(allTextForCat);
+
+  const category = knownTopic ? "tema nacional" : (isInfluencer ? "influencer/streamer digital" : isSport ? "figura del deporte" : isArtist ? "figura del entretenimiento y la cultura" : "figura política");
+
   // 4. Análisis con Gemini (si hay API key) o heurístico
   const geminiResult = await analyzeWithGemini(name, articles, youtubeComments);
 
