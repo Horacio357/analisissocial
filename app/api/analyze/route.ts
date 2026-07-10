@@ -187,10 +187,10 @@ async function analyzeWithGemini(
   articles: Array<{ title?: string; description?: string; source_name?: string; pubDate?: string; link?: string }>,
   youtubeComments: Array<{ author: string; text: string; likes: number }> = []
 ): Promise<GeminiAnalysisResult | null> {
-  if (!GEMINI_API_KEY) return null;
+  if (!GEMINI_API_KEY && !(process.env.XAI_API_KEY || process.env.GROK_API_KEY)) return null;
 
-  const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+  const genAI = GEMINI_API_KEY ? new GoogleGenerativeAI(GEMINI_API_KEY) : null;
+  const model = genAI ? genAI.getGenerativeModel({ model: "gemini-flash-latest" }) : null;
 
   const articlesText = articles
     .filter(a => a.source_name !== "Wikipedia")
@@ -331,6 +331,7 @@ Respondé ÚNICAMENTE con un JSON válido (sin markdown, sin backticks):
 }`;
     const prompt = topicPrompt;
     try {
+      if (!model) throw new Error("Gemini model not initialized for topic");
       const result = await model.generateContent(prompt);
       const text = result.response.text().trim();
       const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -463,6 +464,7 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
 }`;
 
   try {
+    if (!model) throw new Error("Gemini model not initialized for personality");
     const result = await model.generateContent(prompt);
     const text = result.response.text().trim();
     const jsonMatch = text.match(/\{[\s\S]*\}/);
