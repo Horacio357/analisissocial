@@ -103,7 +103,43 @@ Respondé ÚNICAMENTE con un JSON válido (sin markdown, sin backticks):
         provinceCache.set(cacheKey, { data, expiresAt: Date.now() + 2 * 60 * 60 * 1000 });
         return NextResponse.json(data);
       } catch (geminiErr) {
-        console.error("Gemini province error, trying Groq:", geminiErr);
+        console.error("Gemini province error, trying fallback:", geminiErr);
+      }
+    }
+
+    // Fallback Grok (xAI)
+    const XAI_API_KEY = process.env.XAI_API_KEY || process.env.GROK_API_KEY;
+    if (XAI_API_KEY) {
+      try {
+        console.log("Attempting Grok (xAI) province fallback...");
+        const grokRes = await fetch("https://api.xai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${XAI_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "grok-2",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.3,
+            response_format: { type: "json_object" }
+          })
+        });
+        if (grokRes.ok) {
+          const grokData = await grokRes.json();
+          const text = grokData.choices[0].message.content.trim();
+          const jsonMatch = text.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            const data = { ...parsed, aiPowered: true, engine: "grok" };
+            provinceCache.set(cacheKey, { data, expiresAt: Date.now() + 2 * 60 * 60 * 1000 });
+            return NextResponse.json(data);
+          }
+        } else {
+          console.error(`Grok province API error: ${grokRes.status} ${grokRes.statusText}`);
+        }
+      } catch (grokErr) {
+        console.error("Grok province error:", grokErr);
       }
     }
 

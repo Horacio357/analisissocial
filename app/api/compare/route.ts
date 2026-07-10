@@ -83,9 +83,46 @@ Respondé ÚNICAMENTE con un JSON válido (sin markdown, sin backticks):
     return NextResponse.json({ ...parsed, fromCache: false });
 
   } catch (error: any) {
-    console.error("Gemini Compare Error, attempting Groq fallback:", error);
+    console.error("Gemini Compare Error, attempting fallback...");
     
+    // 1. Fallback Grok (xAI)
+    const XAI_API_KEY = process.env.XAI_API_KEY || process.env.GROK_API_KEY;
+    if (XAI_API_KEY) {
+      try {
+        console.log("Attempting Grok (xAI) compare fallback...");
+        const grokRes = await fetch("https://api.xai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${XAI_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "grok-2",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.3,
+            response_format: { type: "json_object" }
+          })
+        });
+        if (grokRes.ok) {
+          const grokData = await grokRes.json();
+          const text = grokData.choices[0].message.content.trim();
+          const jsonMatch = text.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (cacheKey) {
+              compareCache.set(cacheKey, { data: parsed, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 });
+            }
+            return NextResponse.json({ ...parsed, fromCache: false, fromFallback: true, engine: "grok" });
+          }
+        }
+      } catch (grokErr) {
+        console.error("Grok compare fallback error:", grokErr);
+      }
+    }
+
+    // 2. Fallback Groq (Llama 3.3)
     try {
+      console.log("Attempting Groq (Llama 3.3) compare fallback...");
       const GROQ_API_KEY = process.env.GROQ_API_KEY;
       if (!GROQ_API_KEY) throw new Error("No Groq API Key available for fallback");
       
@@ -115,7 +152,7 @@ Respondé ÚNICAMENTE con un JSON válido (sin markdown, sin backticks):
       if (cacheKey) {
         compareCache.set(cacheKey, { data: parsed, expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000 });
       }
-      return NextResponse.json({ ...parsed, fromCache: false, fromFallback: true });
+      return NextResponse.json({ ...parsed, fromCache: false, fromFallback: true, engine: "groq" });
 
     } catch (groqErr) {
       console.error("Groq fallback error:", groqErr);

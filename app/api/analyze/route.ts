@@ -338,7 +338,38 @@ Respondé ÚNICAMENTE con un JSON válido (sin markdown, sin backticks):
       const parsed = JSON.parse(jsonMatch[0]);
       return { ...parsed, aiPowered: true };
     } catch (topicErr) {
-      console.error("Gemini topic error:", topicErr);
+      console.error("Gemini topic error, trying Grok topic fallback:", topicErr);
+      
+      const XAI_API_KEY = process.env.XAI_API_KEY || process.env.GROK_API_KEY;
+      if (XAI_API_KEY) {
+        try {
+          console.log("Attempting Grok (xAI) topic fallback...");
+          const grokRes = await fetch("https://api.xai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${XAI_API_KEY}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              model: "grok-2",
+              messages: [{ role: "user", content: prompt }],
+              temperature: 0.3,
+              response_format: { type: "json_object" }
+            })
+          });
+          if (grokRes.ok) {
+            const grokData = await grokRes.json();
+            const text = grokData.choices[0].message.content.trim();
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              const parsed = JSON.parse(jsonMatch[0]);
+              return { ...parsed, aiPowered: true, engine: "grok" };
+            }
+          }
+        } catch (grokErr) {
+          console.error("Grok topic fallback error:", grokErr);
+        }
+      }
       return null;
     }
   }
@@ -439,8 +470,45 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
     const parsed = JSON.parse(jsonMatch[0]);
     return { ...parsed, aiPowered: true };
   } catch (err) {
-    console.error("Gemini error, attempting Groq fallback:", err);
+    console.error("Gemini error, attempting fallback...");
+    
+    // 1. Fallback Grok (xAI)
+    const XAI_API_KEY = process.env.XAI_API_KEY || process.env.GROK_API_KEY;
+    if (XAI_API_KEY) {
+      try {
+        console.log("Attempting Grok (xAI) fallback...");
+        const grokRes = await fetch("https://api.xai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${XAI_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: "grok-2",
+            messages: [{ role: "user", content: prompt }],
+            temperature: 0.3,
+            response_format: { type: "json_object" }
+          })
+        });
+        if (grokRes.ok) {
+          const grokData = await grokRes.json();
+          const text = grokData.choices[0].message.content.trim();
+          const jsonMatch = text.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            return { ...parsed, aiPowered: true, engine: "grok" };
+          }
+        } else {
+          console.error(`Grok API error: ${grokRes.status} ${grokRes.statusText}`);
+        }
+      } catch (grokErr) {
+        console.error("Grok fallback error:", grokErr);
+      }
+    }
+
+    // 2. Fallback Groq (Llama 3.3)
     try {
+      console.log("Attempting Groq (Llama 3.3) fallback...");
       const GROQ_API_KEY = process.env.GROQ_API_KEY;
       if (!GROQ_API_KEY) throw new Error("No Groq API Key available for fallback");
       
@@ -466,7 +534,7 @@ Respondé ÚNICAMENTE con un JSON válido con esta estructura exacta (sin markdo
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (!jsonMatch) throw new Error("No JSON found in Groq response");
       const parsed = JSON.parse(jsonMatch[0]);
-      return { ...parsed, aiPowered: true, fromFallback: true };
+      return { ...parsed, aiPowered: true, fromFallback: true, engine: "groq" };
     } catch (groqErr) {
       console.error("Groq fallback error:", groqErr);
       return null;
