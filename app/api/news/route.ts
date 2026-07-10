@@ -5,15 +5,50 @@ const API_KEY = process.env.NEWSDATA_API_KEY;
 const API_URL = process.env.NEWSDATA_API_URL || "https://newsdata.io/api/1/latest";
 
 function heuristicSentiment(text: string): number {
-  const pos = ["logro","éxito","victoria","bien","positivo","avance","recuperación","crecimiento",
-    "apoyo","reconocimiento","acuerdo","mejor","progreso","ganó","celebra","excelente","histórico","elogio"];
-  const neg = ["escándalo","corrupción","crisis","fracaso","caída","condena","juicio","protesta",
-    "conflicto","deuda","inflación","pobreza","desempleo","renuncia","acusa","denuncia","fraude",
-    "robo","mal","peor","grave","problema","falla","error","ataque","violencia","crítica","cuestionado"];
-  const lower = text.toLowerCase();
+  const clean = text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+
+  const pos = [
+    "logro", "exito", "victoria", "bien", "positivo", "avance", "recuperacion", "crecimiento",
+    "apoyo", "reconocimiento", "acuerdo", "mejor", "progreso", "gano", "celebra", "excelente", 
+    "historico", "elogio", "record", "superavit", "sube", "alza", "beneficio", "inversion", 
+    "reactivacion", "calma", "alivio", "tregua", "optimista", "repunte", "mejora", "supera",
+    "crece", "fortalece", "respaldo", "inaugura", "obras", "descuento",
+    "estabilidad", "controlado", "inversion", "inversiones", "desarrollo", "empleo", "pyme",
+    "acuerdan", "apoya", "luz verde", "satisfecho", "consenso", "baja el dolar", "baja del dolar",
+    "baja la inflacion", "caida de la inflacion", "desaceleracion"
+  ];
+
+  const neg = [
+    "escandalo", "corrupcion", "crisis", "fracaso", "caida", "condena", "juicio", "protesta",
+    "conflicto", "deuda", "inflacion", "pobreza", "desempleo", "renuncia", "acusa", "denuncia", 
+    "fraude", "robo", "mal", "peor", "grave", "problema", "falla", "error", "ataque", "violencia", 
+    "critica", "cuestionado", "cepo", "tension", "ajuste", "deficit", "freno", "devaluacion", 
+    "despido", "despidos", "desplome", "derrumbe", "marcha", "paro", "huelga", 
+    "reclamo", "descontento", "baja", "tarifazo", "recorte", "licuacion", "recortes", "licua",
+    "tensiones", "polemica", "polemico", "denunciado", "imputado", "allanamiento", "delito",
+    "inseguridad", "delincuencia", "crimen", "asesinato", "robo", "asalto", "drogas", "narco",
+    "narcotrafico", "pobre", "indigencia", "hambre", "escasez", "falta", "quiebra", "suspension",
+    "recesion", "cae", "cayo", "pierde", "perdio", "perjudica", "dano", "alerta", "preocupacion",
+    "preocupante", "amenaza", "riesgo", "riesgoso", "dificil", "complicado", "sancion"
+  ];
+
   let score = 0;
-  pos.forEach(w => { if (lower.includes(w)) score += 0.12; });
-  neg.forEach(w => { if (lower.includes(w)) score -= 0.12; });
+  
+  pos.forEach(w => {
+    if (clean.includes(w)) {
+      score += 0.20;
+    }
+  });
+
+  neg.forEach(w => {
+    if (clean.includes(w)) {
+      score -= 0.20;
+    }
+  });
+
   return Math.max(-1, Math.min(1, score));
 }
 
