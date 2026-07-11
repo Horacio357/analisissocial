@@ -22,22 +22,22 @@ export async function POST(req: Request) {
     }
 
     const emailResponse = await resend.emails.send({
-      from: 'Ojo Social PRO <onboarding@resend.dev>', // Usamos el sandbox dev de Resend por defecto
+      from: 'Proyecto Talos PRO <onboarding@resend.dev>', // Usamos el sandbox dev de Resend por defecto
       to: [to],
-      subject: subject || 'Reporte de Inteligencia Ojo Social',
+      subject: subject || 'Reporte de Inteligencia Proyecto Talos',
       html: `
         <div style="font-family: sans-serif; padding: 20px; color: #333;">
-          <h2 style="color: #00d4ff;">Ojo Social - Reporte Generado</h2>
+          <h2 style="color: #00d4ff;">Proyecto Talos - Reporte Generado</h2>
           <p>Adjunto encontrarás el reporte de análisis territorial y de percepción pública.</p>
           ${message ? `<blockquote style="border-left: 4px solid #00d4ff; padding-left: 10px; margin: 20px 0; font-style: italic;">"${message}"</blockquote>` : ''}
           <p>Este informe fue generado automáticamente mediante inteligencia artificial procesando titulares en tiempo real.</p>
           <hr style="border: none; border-top: 1px solid #eaeaea; margin: 20px 0;" />
-          <p style="font-size: 12px; color: #888;">© ${new Date().getFullYear()} Ojo Social - Todos los derechos reservados.</p>
+          <p style="font-size: 12px; color: #888;">© ${new Date().getFullYear()} Proyecto Talos - Todos los derechos reservados.</p>
         </div>
       `,
       attachments: [
         {
-          filename: filename || 'reporte-ojo-social.pdf',
+          filename: filename || 'reporte-proyecto-talos.pdf',
           content: base64Content,
         },
       ],

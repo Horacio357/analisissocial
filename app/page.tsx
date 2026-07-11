@@ -100,7 +100,7 @@ export default function HomePage() {
             </div>
             <div>
               <span style={{ fontFamily: "Outfit", fontSize: "1.1rem", fontWeight: 800, color: "var(--text-primary)" }}>
-                Ojo Social
+                Proyecto Talos
               </span>
               <span style={{
                 display: "block",
@@ -659,7 +659,7 @@ export default function HomePage() {
       }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", marginBottom: "0.5rem" }}>
           <Eye size={14} color="var(--accent-primary)" />
-          <span style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--text-secondary)" }}>Ojo Social</span>
+          <span style={{ fontFamily: "Outfit", fontWeight: 700, color: "var(--text-secondary)" }}>Proyecto Talos</span>
         </div>
         <p style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
           Ecosistema de Inteligencia Colectiva · Análisis Sociopolítico Argentina

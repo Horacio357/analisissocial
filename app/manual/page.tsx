@@ -28,7 +28,7 @@ export default function ManualPage() {
             display: "flex", alignItems: "center", gap: "0.25rem", color: "var(--text-muted)", 
             textDecoration: "none", fontSize: "0.85rem", fontWeight: 500
           }}>
-            <ChevronLeft size={16} /> Volver a Ojo Social
+            <ChevronLeft size={16} /> Volver a Proyecto Talos
           </Link>
           <div style={{ width: "1px", height: "20px", background: "var(--glass-border)", display: "none" }} className="hide-mobile" />
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -60,10 +60,10 @@ export default function ManualPage() {
           
           <div id="intro" style={{ marginBottom: "4rem" }}>
             <h1 style={{ fontFamily: "Outfit", fontSize: "2.5rem", fontWeight: 900, marginBottom: "1rem" }}>
-              Ojo Social <span className="text-gradient">Docs</span>
+              Proyecto Talos <span className="text-gradient">Docs</span>
             </h1>
             <p style={{ fontSize: "1.1rem", color: "var(--text-secondary)", lineHeight: 1.7 }}>
-              Bienvenido al manual oficial de uso para equipos de consultoría política, comunicación gubernamental y análisis de crisis. Ojo Social utiliza IA generativa (modelos Gemini Pro y Llama-3 en redundancia) para extraer el pulso narrativo de la calle.
+              Bienvenido al manual oficial de uso para equipos de consultoría política, comunicación gubernamental y análisis de crisis. Proyecto Talos utiliza IA generativa (modelos Gemini Pro y Llama-3 en redundancia) para extraer el pulso narrativo de la calle.
             </p>
           </div>
 
@@ -108,7 +108,7 @@ export default function ManualPage() {
               4. Laboratorio Avanzado (PRO 2.0)
             </h2>
             <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem", lineHeight: 1.6 }}>
-              Métricas exclusivas para suscriptores de Ojo Social Premium.
+              Métricas exclusivas para suscriptores de Proyecto Talos Premium.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "1.2rem" }}>
               <div style={{ paddingLeft: "1rem", borderLeft: "2px solid #f43f5e" }}>

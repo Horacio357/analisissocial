@@ -58,7 +58,7 @@ export default function LoginPage() {
       <div className="glass-card" style={{ maxWidth: "400px", width: "100%", padding: "2rem" }}>
         <div style={{ textAlign: "center", marginBottom: "2rem" }}>
           <h1 style={{ fontFamily: "Outfit", fontSize: "2rem", color: "var(--text-primary)", marginBottom: "0.5rem" }}>
-            Ojo Social <span style={{ color: "var(--accent-primary)" }}>PRO</span>
+            Proyecto Talos <span style={{ color: "var(--accent-primary)" }}>PRO</span>
           </h1>
           <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem" }}>
             Iniciá sesión para acceder a herramientas avanzadas.

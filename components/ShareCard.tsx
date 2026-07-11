@@ -26,7 +26,7 @@ export default function ShareCard({ analysis, compareAnalysis }: ShareCardProps)
   // Texto para compartir
   const buildShareText = () => {
     if (compareAnalysis) {
-      return `📊 Comparativa Ojo Social
+      return `📊 Comparativa Proyecto Talos
 ${analysis.name} (${archConf.emoji} ${archConf.label}) vs ${compareAnalysis.name} (${compareConf!.emoji} ${compareConf!.label})
 
 • Aprobación: ${analysis.metrics.approval} vs ${compareAnalysis.metrics.approval}
@@ -35,7 +35,7 @@ ${analysis.name} (${archConf.emoji} ${archConf.label}) vs ${compareAnalysis.name
 
 Analizá el pulso social argentino en: ojosocial.ar`;
     }
-    return `🔍 Análisis Ojo Social: ${analysis.name}
+    return `🔍 Análisis Proyecto Talos: ${analysis.name}
 ${archConf.emoji} Arquetipo: ${archConf.label} (${analysis.archetypeScore}% confianza)
 📊 Aprobación: ${analysis.metrics.approval}/100
 ⚡ Polarización: ${analysis.metrics.polarization}/100
@@ -98,7 +98,7 @@ Analizá el pulso social argentino en: ojosocial.ar`;
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Análisis Ojo Social: ${analysis.name}`,
+          title: `Análisis Proyecto Talos: ${analysis.name}`,
           text: shareText,
           url: "https://ojosocial.ar",
         });
@@ -284,7 +284,7 @@ Analizá el pulso social argentino en: ojosocial.ar`;
                 display: "flex", justifyContent: "space-between", alignItems: "center",
               }}>
                 <span style={{ fontSize: "0.6rem", color: "var(--accent-primary)", fontWeight: 700, fontFamily: "Outfit" }}>
-                  👁 Ojo Social
+                  🏛 Proyecto Talos
                 </span>
                 <span style={{ fontSize: "0.58rem", color: "var(--text-muted)" }}>ojosocial.ar</span>
               </div>

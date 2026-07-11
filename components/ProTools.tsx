@@ -92,7 +92,7 @@ export default function ProTools({ targetId, reportName }: ProToolsProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           to: email,
-          subject: `Reporte Analítico: ${reportName} - Ojo Social`,
+          subject: `Reporte Analítico: ${reportName} - Proyecto Talos`,
           message,
           pdfBase64,
           filename: `Reporte_${reportName.replace(/\s+/g, "_")}.pdf`
@@ -229,7 +229,7 @@ export default function ProTools({ targetId, reportName }: ProToolsProps) {
                 <textarea
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Adjunto el último informe territorial de Ojo Social..."
+                  placeholder="Adjunto el último informe territorial de Proyecto Talos..."
                   rows={3}
                   style={{
                     width: "100%", padding: "0.7rem", borderRadius: "8px",

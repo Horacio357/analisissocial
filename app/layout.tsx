@@ -9,14 +9,14 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Ojo Social | Inteligencia Colectiva & Análisis Sociopolítico",
+  title: "Proyecto Talos | Inteligencia Colectiva & Análisis Sociopolítico",
   description:
     "Plataforma avanzada de análisis de sentimiento e inteligencia sociopolítica. Monitorea el pulso social, arquetipos de personalidades y el mapa de calor emocional de Argentina en tiempo real.",
   keywords:
     "análisis social, inteligencia artificial, sentimiento, Argentina, política, personalidades públicas",
-  authors: [{ name: "Ojo Social" }],
+  authors: [{ name: "Proyecto Talos" }],
   openGraph: {
-    title: "Ojo Social | Inteligencia Colectiva",
+    title: "Proyecto Talos | Inteligencia Colectiva",
     description:
       "Monitorea el pulso social y los arquetipos de personalidades públicas en tiempo real",
     type: "website",
